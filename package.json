@@ -1,0 +1,35 @@
+{
+	"name": "drinckscity",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"start": "node node_modules/react-native/local-cli/cli.js start",
+		"test": "jest"
+	},
+	"dependencies": {
+		"moment": "^2.20.1",
+		"native-base": "^2.2.0",
+		"prop-types": "^15.6.0",
+		"react": "16.0.0",
+		"react-native": "0.50.4",
+		"react-native-camera": "^0.7.0",
+		"react-native-fontawesome": "^5.7.0",
+		"react-native-fs": "^2.9.7",
+		"react-native-image-crop-picker": "^0.19.1",
+		"react-native-modal": "^5.0.0",
+		"react-native-photo-upload": "^1.2.0",
+		"react-native-popup-menu": "^0.12.2",
+		"react-native-youtube": "^1.1.0",
+		"react-navigation": "^1.0.0-beta.27",
+		"redux": "^3.7.2"
+	},
+	"devDependencies": {
+		"babel-jest": "22.1.0",
+		"babel-preset-react-native": "4.0.0",
+		"jest": "22.1.4",
+		"react-test-renderer": "16.0.0-alpha.12"
+	},
+	"jest": {
+		"preset": "react-native"
+	}
+}
