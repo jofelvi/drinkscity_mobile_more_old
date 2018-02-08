@@ -212,15 +212,6 @@ export default class FormEvent extends React.Component{
 				<StatusBar backgroundColor={this.state.statusBarColor} />
 				<ScrollView>
 					<Form>
-						<Row>
-
-							<Col>
-								<WebView
-									source={{ uri : this._showVideoByLink(this.state.video_link) }}
-									style={{ height: 300, width: "100%" }}
-								/>
-							</Col>
-						</Row>
 						<Item floatingLabel>
 							<Label 
 								style={{ color: "#ffffff" }} >Titulo del aviso

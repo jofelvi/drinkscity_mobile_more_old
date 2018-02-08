@@ -32,6 +32,7 @@ import { store } from '../redux/store';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import Connection from '../config/connection';
 const moment = require('moment')
+import BackHandler from 'BackHandler';
 
 export default class Productos extends React.Component{
 
@@ -57,6 +58,8 @@ export default class Productos extends React.Component{
 	componentWillMount(){
 		let instance = new Product;
 		instance.allToRedux();
+		BackHandler.removeEventListener('hardwareBackPress', ()=> true);
+		BackHandler.addEventListener('hardwareBackPress', ()=> this.props.navigation.goBack());
 	}
 
 	_loadUrlImageResource(toLoad){

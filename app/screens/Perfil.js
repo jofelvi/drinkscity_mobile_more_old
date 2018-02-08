@@ -37,6 +37,8 @@ var options = {
 };
 
 
+import BackHandler from 'BackHandler';
+
 export default class Perfil extends React.Component{
 
 	static navigationOptions = {
@@ -82,6 +84,11 @@ export default class Perfil extends React.Component{
 			}
 			
 		});
+	}
+
+	componentWillMount(){
+		BackHandler.removeEventListener('hardwareBackPress', ()=> true);
+		BackHandler.addEventListener('hardwareBackPress', ()=> this.props.navigation.goBack());
 	}
 
 	render(){

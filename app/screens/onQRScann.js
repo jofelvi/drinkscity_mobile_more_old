@@ -26,6 +26,8 @@ import {
 
 import Connection from '../config/connection';
 import Model from '../classes/Model'
+import BackHandler from 'BackHandler';
+
 export default class onQRScann extends React.Component{
 
 	static navigationOptions = {
@@ -55,6 +57,13 @@ export default class onQRScann extends React.Component{
 			order: order,
 			user: user
 		});
+	}
+
+	componentDidMount(){
+
+	    BackHandler.removeEventListener('hardwareBackPress', ()=> true);
+	    BackHandler.addEventListener('hardwareBackPress', ()=> this.props.navigation.goBack());
+	    
 	}
 
 	_resumenOrder(){

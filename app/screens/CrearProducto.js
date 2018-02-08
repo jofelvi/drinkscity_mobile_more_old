@@ -25,6 +25,7 @@ import {
 	TouchableOpacity,
 	Alert
 } from 'react-native';
+var BackHandler = require('BackHandler')
 
 
 export default class CrearProducto extends React.Component{
@@ -38,7 +39,11 @@ export default class CrearProducto extends React.Component{
 	constructor(props){
 		super(props);
 	}
+	componentWillMount(){
 
+		BackHandler.removeEventListener('hardwareBackPress', ()=> true);
+		BackHandler.addEventListener('hardwareBackPress', ()=> this.props.navigation.goBack());
+	}
 	render(){
 		const { width, height } = Dimensions.get('screen')
 

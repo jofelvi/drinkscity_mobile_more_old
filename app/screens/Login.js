@@ -32,6 +32,7 @@ import {
 import Connection from '../config/connection';
 
 import FontAwesome, {Icons} from 'react-native-fontawesome'
+import BackHandler from 'BackHandler';
 
 const con = new Connection();
 
@@ -48,6 +49,13 @@ export default class Login extends React.Component {
 		};
 
 
+	}
+
+	componentWillMount(){
+		BackHandler.addEventListener('hardwareBackPress',()=>{
+			BackHandler.exitApp();
+			return false;
+		});
 	}
 
 	async requestLogin(){

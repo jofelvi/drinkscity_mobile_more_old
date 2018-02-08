@@ -87,6 +87,7 @@ export default class Product extends Model{
 				}
 			}
 		}
+
 		let resp = super.push('product', 'POST', navigation);
 	}
 }

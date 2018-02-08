@@ -33,6 +33,8 @@ import FontAwesome, {Icons} from 'react-native-fontawesome';
 import Funcionario from '../classes/Funcionario';
 import { store } from '../redux/store';
 
+var BackHander = require('BackHandler')
+
 export default class Funcionarios extends React.Component{
 
 	static navigationOptions = ({navigation}) => ({

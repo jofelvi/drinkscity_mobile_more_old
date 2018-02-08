@@ -36,7 +36,8 @@ export default class Splash extends React.Component {
 					Authorization: oldToken.token
 				}
 			}).then( resp =>{
-				if( resp.status == undefined || resp._bodyInit.token == 'Invalid token' ){
+				let _bodyInit = JSON.parse(resp._bodyInit);
+				if( resp.status == undefined || resp._bodyInit.token == 'Invalid token' || resp.status == 401 || _bodyInit.error == 'Not Authorized' ){
 					this.props.navigation.navigate('RootScreen');
 					return false;
 				}

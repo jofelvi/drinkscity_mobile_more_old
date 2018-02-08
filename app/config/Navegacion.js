@@ -12,6 +12,8 @@ import ListFormsEvents from '../screens/ListFormsEvents';
 import Login from '../screens/Login';
 import ListaEventos from '../screens/ListaEventos';
 import Splash from '../screens/Splash';
+import Ventas from '../screens/Ventas';
+
 import { Platform, StatusBar } from 'react-native';
 
 import FormEvent from '../components/forms/FormEvent';
@@ -64,6 +66,9 @@ const Navigation = StackNavigator({
 	},
 	Eventos:{
 		screen: ListaEventos
+	},
+	VentasScreen: {
+		screen: Ventas
 	}
 },{
    cardStyle: {

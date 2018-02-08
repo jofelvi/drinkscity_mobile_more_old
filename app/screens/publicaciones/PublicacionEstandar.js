@@ -22,7 +22,7 @@ import {
 } from 'react-native';
 
 import PubEstandar from '../../components/forms/PubEstandar';
-
+var BackHandler = require('BackHandler')
 
 export default class PublicacionEstandar extends React.Component{
 
@@ -36,7 +36,11 @@ export default class PublicacionEstandar extends React.Component{
 		super(props);
 
 	}
+	componentWillMount(){
 
+		BackHandler.removeEventListener('hardwareBackPress', ()=> true);
+		BackHandler.addEventListener('hardwareBackPress', ()=> this.props.navigation.goBack());
+	}
 	_renderForm(){
 		 const { state } = this.props.navigation
 

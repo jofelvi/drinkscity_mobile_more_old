@@ -7,6 +7,7 @@ import {
 import { store } from '../redux/store';
 import { searchProducts, modelActions } from '../redux/actions';
 import { funcionarios } from '../redux/actions';
+import BackHandler from 'BackHandler';
 
 const moment = require('moment');
 const RNFS = require('react-native-fs');
@@ -57,7 +58,17 @@ export default class Model{
 
 	}
 
-	async _getRequest(){
+	_validSessionOrKill(resp, navigation = null){
+		let  _bodyInit  = JSON.parse(resp._bodyInit);
+		if( resp.status == undefined || resp._bodyInit.token == 'Invalid token' || resp.status == 401 || _bodyInit.error == 'Not Authorized' ){
+			if( navigation !== null ){
+				navigation.navigate('RootScreen');
+				return false;
+			}
+			BackHandler.exitApp();
+		}
+	}
+	async _getRequest( navigation = null ){
 
 		let session = await AsyncStorage.getItem("@session");
 		let token = await JSON.parse(session);
@@ -69,7 +80,10 @@ export default class Model{
 				Accept: 'application/json',
 				Authorization:token.token
 			}
-		} ).then( data =>{ return JSON.parse(data._bodyInit);} ).then( data => data	 );
+		} ).then( data =>{ 
+			let valid = this._validSessionOrKill(data, navigation);
+			return JSON.parse(data._bodyInit);
+		} ).then( data => data	 );
 
 		store.dispatch(searchProducts(data));
 	}
@@ -148,6 +162,7 @@ export default class Model{
 
 		let json = JSON.stringify(this.data)
 		const body = '{"'+param+'":'+json+'}';
+
 		return await fetch( connection.getUrlApi(this._model), {
 			method,
 			headers:{
@@ -157,7 +172,8 @@ export default class Model{
 			},
 			body: body
 		}).then( resp => {
-			let data = resp;
+			let valid = this._validSessionOrKill(resp, navigation);
+
 			if((data.status == 200 || data.status == '200') || (data.status = '201' || data.status == 201)){
 				Alert.alert('Confirmacion', 'Los datos han sido guardados correctamente', [
 					{
@@ -183,7 +199,7 @@ export default class Model{
 		});
 	}
 
-	async getAll(){
+	async getAll(navigation = null){
 
 
 
@@ -199,13 +215,16 @@ export default class Model{
 				Authorization: token.token
 			}
 		}).then( resp =>{
-			return JSON.parse(resp._bodyInit);
+			let valid = this._validSessionOrKill(resp, navigation);
+			if(resp.status == 200 || resp.status == '200')
+				return JSON.parse(resp._bodyInit);
+			navigation.navigate('RootScreen')
 		});
 
 		store.dispatch(modelActions(req, this._model));
 	}	
 
-	async delete(method = 'DELETE'){
+	async delete(method = 'DELETE', navigation = null){
 
 
 
@@ -219,11 +238,14 @@ export default class Model{
 				Accept: 'application/json',
 				Authorization: token.token
 			}
-		}).then( resp =>{ Alert.alert('Accion realizada', 'La accion se ha realizado de manera correcta'); } );
+		}).then( resp =>{
+			let valid = this._validSessionOrKill(resp, navigation);
+			Alert.alert('Accion realizada', 'La accion se ha realizado de manera correcta'); 
+		} );
 
 	}
 
-	async update(method = 'PUT', model='user', id=undefined ,navigation){
+	async update(method = 'PUT', model='user', id=undefined ,navigation = null){
 
 
 		let session = await AsyncStorage.getItem("@session");
@@ -242,6 +264,7 @@ export default class Model{
 			body: params
 		}).then(resp => {
 			const { _bodyInit } = resp;
+			let valid = this._validSessionOrKill(resp, navigation);
 
 			if(resp.status == '200' || resp.status == 200 || resp.status == '201' || resp.status == 201){
 				Alert.alert('Correcto', 'Los datos han sido actualizados correctamente', [
@@ -261,21 +284,24 @@ export default class Model{
 
 	}
 
-	static async getWithId(model , id){
+	static async getWithId(model , id = null, navigation = null){
 
 
 
 		let session = await AsyncStorage.getItem("@session");
 		let token = await JSON.parse(session);
 		con = new Connection();
+		let url = ( id != null ) ? con.getUrlApi(model)+'/'+id : con.getUrlApi(model);
 
-		let resp = fetch(con.getUrlApi(model)+'/'+id, {
+		let resp = fetch( url, {
 			method: 'GET',
 			headers:{
 				Accept: 'application/json',
 				Authorization: token.token
 			}
 		}).then( (resp)=>{
+			model = new Model;
+			let valid = model._validSessionOrKill(resp, navigation);
 			return resp._bodyInit;
 		});
 

@@ -18,6 +18,7 @@ import {
 
 import MainHeader from '../components/MainHeader'
 import Botonera from '../components/Botonera'
+var BackHandler = require('BackHandler');
 
 export default class Home extends Component {
 
@@ -38,6 +39,17 @@ export default class Home extends Component {
 
 	componentWillMount(){
 		this.saveToken();
+
+	}
+
+	componentDidMount(){
+		BackHandler.addEventListener('hardwareBackPress', ()=>{
+			BackHandler.exitApp()
+		});
+	}
+
+	componentWillUnmount(){
+		BackHandler.removeEventListener('hardwareBackPress', ()=> false);
 	}
 
 	render(){

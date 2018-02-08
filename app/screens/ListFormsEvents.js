@@ -25,6 +25,7 @@ import {
 	Alert
 } from 'react-native';
 
+import BackHandler from 'BackHandler';
 
 export default class ListFormsEvents extends React.Component{
 
@@ -37,6 +38,11 @@ export default class ListFormsEvents extends React.Component{
 	constructor(props){
 		super(props);
 	}
+
+	componentWillMount(){
+	    BackHandler.removeEventListener('hardwareBackPress', ()=> true);
+	    BackHandler.addEventListener('hardwareBackPress', ()=> this.props.navigation.goBack());
+    }
 
 	render(){
 		const { width, height } = Dimensions.get('screen')

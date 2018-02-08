@@ -22,6 +22,8 @@ import {
 
 import { QRScannerView } from '../components/AC-QRCode-RN/lib/index';
 
+import BackHandler from 'BackHandler';
+
 import Camera from 'react-native-camera';
 
 export default class QRScaner extends Component {
@@ -39,6 +41,8 @@ export default class QRScaner extends Component {
   }
 
   componentWillMount(){
+    BackHandler.removeEventListener('hardwareBackPress', ()=> true);
+    BackHandler.addEventListener('hardwareBackPress', ()=> this.props.navigation.goBack());
     this.setState({
       camera : {
         onBarCodeRead: this.onBarCodeRead

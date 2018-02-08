@@ -32,6 +32,8 @@ import FontAwesome, {Icons} from 'react-native-fontawesome';
 import Funcionario from '../classes/Funcionario';
 import { funcionario } from '../redux/actions';
 
+var BackHandler = require('BackHandler')
+
 export default class AboutFuncionario extends React.Component{
 
 	static navigationOptions = ({navigation}) => ({
@@ -56,6 +58,12 @@ export default class AboutFuncionario extends React.Component{
 			funcionario: new Funcionario(func),
 			...func
 		}
+	}
+	
+	componentWillMount(){
+
+		BackHandler.removeEventListener('hardwareBackPress', ()=> true);
+		BackHandler.addEventListener('hardwareBackPress', ()=> this.props.navigation.goBack());
 	}
 
 	_accion(accion){
