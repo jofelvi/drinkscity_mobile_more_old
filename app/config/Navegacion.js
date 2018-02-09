@@ -11,6 +11,7 @@ import onQRScann from '../screens/onQRScann';
 import ListFormsEvents from '../screens/ListFormsEvents';
 import Login from '../screens/Login';
 import ListaEventos from '../screens/ListaEventos';
+import Graphics from '../screens/Graphics';
 import Splash from '../screens/Splash';
 import Ventas from '../screens/Ventas';
 
@@ -69,6 +70,9 @@ const Navigation = StackNavigator({
 	},
 	VentasScreen: {
 		screen: Ventas
+	},
+	GraphicsScreen: {
+		screen: Graphics
 	}
 },{
    cardStyle: {

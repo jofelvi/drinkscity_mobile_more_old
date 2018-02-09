@@ -31,13 +31,15 @@ import Model from '../classes/Model';
 import { store } from '../redux/store';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
+import MainHeader from '../components/MainHeader';
+
 const moment = require('moment')
 var BackHandler = require('BackHandler');
 
 export default class Ventas extends Component{
 	
 	static navigationOptions = {
-		title: 'Creacion de eventos',
+		title: 'Mis ventas',
 		headerTintColor: "#ffffff",
 		headerStyle: { backgroundColor: "#02A6A4" }
 	}
@@ -130,9 +132,11 @@ export default class Ventas extends Component{
 					return(
 						<ListItem>
 							<Left>
-								<Text style={{color :"#ffffff"}}>
-									{product.name}
-								</Text>
+								<TouchableOpacity onPress={ ()=>{ this.props.navigation.navigate('GraphicsScreen', { product, orders: this.state.orders }) } }>
+									<Text style={{color :"#ffffff"}}>
+										{product.name}
+									</Text>
+								</TouchableOpacity>
 							</Left>
 							<Body/>
 							<Right>
@@ -153,56 +157,24 @@ export default class Ventas extends Component{
 		return(
 			<View style={styles.container}>
 				<StatusBar translucent backgroundColor={'#02A6A4'} />	
-				<Container>
-
-					<Row>
-
-						<Row  style={{alignSelf: "center", alignItems: "center", alignContent:"center"}}>
-							<Grid>
-								<Col style={{alignItems: "center", justifyContent: "center"}}>
-									<TouchableHighlight style={{alignSelf: "center", alignItems: "center", alignContent:"center"}}>
-										<Thumbnail
-											square 
-											source={require('../assets/img/cafe.jpeg')} 
-											style={{
-												minWidth: 200,
-												minHeight: 200,
-												maxWidth: 200,
-												maxHeight: 200
-											}}
-										/>
-									</TouchableHighlight>
-								</Col>
-							</Grid>
-						</Row>
-					</Row>
-						<Row style={{flex: 1, height: 12, marginTop: "12%"}}>
-							<Col style={{ justifyContent: "center", height: 22, backgroundColor: "green" ,alignContent: "center" ,alignItems: "center"}}>
-								<Text style={{color:"#ffffff"}}>
-									Pagadas
-								</Text>
-							</Col>
-							<Col style={{ backgroundColor: "blue" , height: 22, justifyContent: "center", alignContent: "center" ,alignItems: "center"}}>
-								<Text style={{color:"#ffffff"}}>
-									validadas
-								</Text>
-							</Col>
-							<Col style={{ justifyContent: "center", height: 22, alignContent: "center" ,alignItems: "center"}}>
-								<Text style={{color:"#ffffff"}}>
-									Total
-								</Text>
+				<Container style={{marginTop: 12}}>
+					<Grid>
+						<Row>
+							<Col>
+								<MainHeader  {...this.props} />
+								<Button block onPress={()=>{this.props.navigation.navigate('GraphicsScreen', { products: this.state.products, orders: this.state.orders } )}}>
+									<Text>
+										Graficos
+									</Text>
+								</Button>
+								<List>
+									<ScrollView>
+									{this._renderList()}
+									</ScrollView>
+								</List>
 							</Col>
 						</Row>
-					<Row style={{marginTop: "-30%", height: 270}}>
-						<Col style={{flex: 1, height: 270}}>
-						<ScrollView>
-							<List>
-								{this._renderList()}
-							</List>
-						</ScrollView>
-						</Col>
-					</Row>
-
+					</Grid>
 				</Container>
 			</View>
 		);
