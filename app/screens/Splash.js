@@ -3,7 +3,8 @@ import {
 	Image,
 	StatusBar,
 	AsyncStorage,
-	Alert
+	Alert,
+	BackHandler
 } from 'react-native';
 
 import {
@@ -36,7 +37,9 @@ export default class Splash extends React.Component {
 					Authorization: oldToken.token
 				}
 			}).then( resp =>{
+				Alert.alert('DEBIG', JSON.stringify(resp._bodyInit))
 				let _bodyInit = JSON.parse(resp._bodyInit);
+				
 				if( resp.status == undefined || resp._bodyInit.token == 'Invalid token' || resp.status == 401 || _bodyInit.error == 'Not Authorized' ){
 					this.props.navigation.navigate('RootScreen');
 					return false;

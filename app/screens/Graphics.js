@@ -18,7 +18,8 @@ import {
 
 import { 
 	VictoryBar ,
-	VictoryChart
+	VictoryChart,
+	VictoryTheme
 } from 'victory-native';
 
 export default class Graphics extends Component{
@@ -29,12 +30,19 @@ export default class Graphics extends Component{
 		headerStyle: { backgroundColor: "#02A6A4" }
 	});
 
+	constructor(props){
+		super(props);
+		this.state ={
+			data: []
+		};
+	}
+
 	renderCategories(){
 		const { products } = this.props.navigation.state.params
 		var categories = [];
 
-		products.map( (product)=>{
-			if(product != null){
+		products.map( (product, i)=>{
+			if(product != null && i <= 7){
 				categories.push(product.name);
 			}
 		});
@@ -42,15 +50,55 @@ export default class Graphics extends Component{
 		return categories;
 	}
 
+	componentWillMount(){
+		const { products } = this.props.navigation.state.params;
+		let len = products.length;
+		for(let i = 0; i< len; i++){
+
+			if( products[i] != null ){
+				for(let j=0; j< len; j ++){
+					if( products[j] == null  && j < i){
+						let aux = products[j];
+						products[j] = products[i];
+						products[i] = aux;
+					}else if( (products[i].validates < products[j].validates) ){
+						let aux = products[i];
+						products[i] = products[j];
+						products[j] = aux; 
+					}
+				} // FIN DEL FOR INTERNO
+			} // FIN DEL PRIMER IF
+		} // FIN DEL PRIMER FOR
+
+
+		let data = [];
+		for(let i = 1; i < 7; i++){
+			data.push({x: i, y: products[i].validates, width: 6});
+		}
+		//Alert.alert('DEBUG', JSON.stringify(this.state.data));
+		//
+		this.setState({
+			data: data,
+			products
+		});
+	}
+
 	render(){
+
 		return(
 			<View style={styles.container}>
 				<StatusBar translucent backgroundColor={'#02A6A4'} />
 				<Card>
-					<CardItem>
-						<VictoryChart>
+					<CardItem style={{width: "100%"}}>
+						<VictoryChart 
+							theme={VictoryTheme.material} 
+							domain={{ x: [1, 7], y: [0, 6] }}
+						>
 							<VictoryBar 
 								categories={{y: this.renderCategories()}}
+								alignment={"start"}
+								data={this.state.data}
+								animate={{ duration: 2000 }}
 							/>
 						</VictoryChart>
 					</CardItem>
