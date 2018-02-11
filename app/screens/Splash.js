@@ -3,7 +3,8 @@ import {
 	Image,
 	StatusBar,
 	AsyncStorage,
-	Alert
+	Alert,
+	BackHandler
 } from 'react-native';
 
 import {
@@ -23,7 +24,7 @@ export default class Splash extends React.Component {
 			let oldToken = await JSON.parse(session);
 
 			if( session == undefined || oldToken==null ){
-				this.props.navigation.navigate('RootScreen');
+				this.props.navigation.navigate('SlideScreen');
 				return false;
 			}
 
@@ -37,8 +38,9 @@ export default class Splash extends React.Component {
 				}
 			}).then( resp =>{
 				let _bodyInit = JSON.parse(resp._bodyInit);
+				
 				if( resp.status == undefined || resp._bodyInit.token == 'Invalid token' || resp.status == 401 || _bodyInit.error == 'Not Authorized' ){
-					this.props.navigation.navigate('RootScreen');
+					this.props.navigation.navigate('SlideScreen');
 					return false;
 				}
 				let session = {

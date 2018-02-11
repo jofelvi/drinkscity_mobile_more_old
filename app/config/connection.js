@@ -9,7 +9,7 @@ export default class Connection{
 		this.data = {
 			protocol: 'http:',
 			secure_protocol: 'https:',
-			host: '165.227.98.133/api/v1',
+			host: '45.55.63.230/api/v1',
 			port: 36572,
 			onlyUrl: '165.227.98.133',
 			onSession: false,
