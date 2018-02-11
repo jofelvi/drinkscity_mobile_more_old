@@ -26,7 +26,9 @@
 		"react-native-youtube": "^1.1.0",
 		"react-navigation": "^1.0.0-beta.27",
     	"react-native-svg": "^5.2.0",
-		"redux": "^3.7.2"
+		"redux": "^3.7.2",
+	    "assign-deep": "^0.4.5",
+	    "react-native-swiper": "git+https://github.com/FuYaoDe/react-native-swiper.git"
 	},
 	"devDependencies": {
 		"babel-jest": "22.1.0",

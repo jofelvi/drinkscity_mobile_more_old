@@ -13,6 +13,7 @@ import Login from '../screens/Login';
 import ListaEventos from '../screens/ListaEventos';
 import Graphics from '../screens/Graphics';
 import Splash from '../screens/Splash';
+import SlideScreen from '../screens/SlideScreen';
 import Ventas from '../screens/Ventas';
 
 import { Platform, StatusBar } from 'react-native';
@@ -28,6 +29,9 @@ const Navigation = StackNavigator({
 		navigationOptions: {
 			header: false
 		}
+	},
+	SlideScreen: {
+		screen: SlideScreen
 	},
 	HomeScreen: {
 		screen: Home,
