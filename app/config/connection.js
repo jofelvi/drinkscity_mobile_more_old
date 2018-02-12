@@ -11,7 +11,7 @@ export default class Connection{
 			secure_protocol: 'https:',
 			host: '45.55.63.230/api/v1',
 			port: 36572,
-			onlyUrl: '165.227.98.133',
+			onlyUrl: '45.55.63.230',
 			onSession: false,
 			token: null
 		}

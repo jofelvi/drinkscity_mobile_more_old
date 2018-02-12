@@ -7,7 +7,13 @@ import {
 	Row,
 	Col,
 	H2,
-	Spinner
+	Spinner,
+	List,
+	ListItem,
+	Text,
+	Right,
+	Left,
+	Body
 } from 'native-base';
 
 import {
@@ -15,13 +21,14 @@ import {
 	Dimensions,
 	Image,
 	TouchableOpacity,
-	Alert
+	Alert,
+	AsyncStorage,
+	ScrollView
 } from 'react-native';
 
 import {
 	Thumbnail,
-	Button,
-	Text
+	Button
 } from 'native-base'
 
 import Connection from '../config/connection';
@@ -41,22 +48,26 @@ export default class onQRScann extends React.Component{
 		super(props);
 		this.state = {
 			user: null,
-			order: null
+			order: null,
+			load: true
 		}
 	}
 
 	async componentWillMount(){
 		let user = {};
 		let order = {};
-		user = await Model.getWithId('users', 1).then( resp => JSON.parse(resp) );
 		const { navigation } = this.props;
 		const { scanData } = navigation.state.params
 
 		order = await Model.getWithId('orders', scanData.data).then( resp => JSON.parse(resp) );
-		this.setState({
-			order: order,
-			user: user
-		});
+		if( order != null && order != undefined )
+		{
+			this.setState({ load: false });
+
+			this.setState({
+				order: order
+			});
+		}
 	}
 
 	componentDidMount(){
@@ -67,11 +78,10 @@ export default class onQRScann extends React.Component{
 	}
 
 	_resumenOrder(){
-		if(this.state.order != null && this.state.user!=null){
+		if(this.state.order != null){
 			return (
 				<View>
 					<View style={{alignSelf: "center"}}>
-						<H2 style={{color: "#ffffff", fontSize: 18}}>ORDEN A FAVOR DE {this.state.user.fullname}</H2>
 					</View>
 					<View style={{alignSelf: "center"}}>
 						<H2 style={{color: "#ffffff", fontSize: 14, fontWeight: 'bold'}}>SUB TOTAL: .... {this.state.order.subtotal}</H2>
@@ -94,16 +104,21 @@ export default class onQRScann extends React.Component{
 	async _validate(order){
 		let session = await AsyncStorage.getItem("@session");
 		let token = await JSON.parse(session);
-		const body = '{"id": '+order.order_items[0].order_id+' }';
+
+		const body = '{"id": '+order.id+', "validator_id": '+token.user.id+' }';
+		
+
 		con = new Connection();
 		let resp = await fetch( con.getUrlApi('orders/validate_order'), {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: token.token
+				Authorization: token.token,
+				Accept: 'json'
 			},
 			body: body
 		}).then( resp =>{
+			Alert.alert('DEBUG-RESP', JSON.stringify(resp));
 			if(resp.status == 200 || resp.status == '200'){
 				Alert.alert('Correcto', 'La orden ha sido correctamente validada', [
 					{
@@ -138,6 +153,36 @@ export default class onQRScann extends React.Component{
 		
 	}
 
+	_renderResumenOrderItems(){
+		let { order } = this.state;
+ 
+		if( order  != null ){
+				let itemsList = order.order_items.order_items.map( (item, i)=>{
+					return(
+						<ListItem style={{borderBottomWidth: 0}} avatar noBorder>
+							<Left style={{borderBottomWidth: 0}}>
+								<Text style={{color: "#ffffff"}}>
+									({item.quantity})
+								</Text>
+							</Left>
+							<Body style={{borderBottomWidth: 0}}>
+								<Text style={{color: "#ffffff"}}>
+									 {item.name}
+								</Text>
+								<Text note>
+									$ {item.unit_price}
+								</Text>
+							</Body>
+							<Right style={{borderBottomWidth: 0}} />
+						</ListItem>
+					);
+				});
+
+				return itemsList;
+		}
+
+		return null;
+	}
 
 	render(){
 		const { width, height } = Dimensions.get('screen')
@@ -157,12 +202,14 @@ export default class onQRScann extends React.Component{
 						</TouchableOpacity>
 					</View>
 					<View style={{marginTop: "14%"}}>
-						<Button onPress={()=>{this.validateOrder()}}  rounded full danger>
-							<Text style={{color: "#ffffff"}}>Validar</Text>
+						<Button disabled={this.state.load} onPress={()=>{this.validateOrder()}}  rounded full danger>
+							<Text style={{color: "#ffffff"}}>{ (this.state.load)? 'Cargando datos ...' : 'Validar'}</Text>
 						</Button>
 					</View>
 					<View>
-						{this._resumenOrder()}
+						<List>
+						{this._renderResumenOrderItems()}
+						</List>
 					</View>
 				</View>
 			</View>

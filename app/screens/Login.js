@@ -82,20 +82,33 @@ export default class Login extends React.Component {
 			}).then(resp => {
 				let { _bodyInit } = resp;
 				_bodyInit = JSON.parse(_bodyInit);
-				let data =  _bodyInit;
+				var data = _bodyInit;
 				if(resp.status == 200 || resp.status == '200'){
 					let session = {
-						token: data.auth_token
+						token: data.auth_token,
+						user: data.current_user
 					}
-					AsyncStorage.removeItem('@session');
 					AsyncStorage.setItem('@session', JSON.stringify(session));
 				    this.props.navigation.navigate('HomeScreen', {token: session});
 					
 				}
+				else{
+					Alert.alert('Credenciales invalidas', 'La combinacion de usuario y contraseña ingresada no son correctas, vuelva a intentar', [
+						{
+							text: 'Aceptar'	
+						}
+					]);
+				}
 				this.setState({ loading: false, text: 'Ingresar'});
 			});
 		}catch(err){
-			console.log
+			console.log(err);
+			this.setState({ loading: false, text: 'Ingresar'});
+			Alert.alert('Error de conectividad', JSON.stringify(err)+'Verifique que esta correctamente conectado a internet y vuelva a intentarlo', [
+					{
+						text: 'aceptar'
+					}
+				]);
 		}
 	}
 
@@ -147,10 +160,24 @@ export default class Login extends React.Component {
 									</Col>
 								</Row>
 								<Row>
-									<Col style={{width: "95%"}}>
-										<Button disabled={this.state.login} onPress={()=>{ this.requestLogin() }} block rounded style={{marginTop: 10}}>
+									<Col style={{width: "100%"}}>
+										<Button disabled={this.state.login} onPress={()=>{ this.requestLogin() }} block  style={{marginTop: 10}}>
 											<Text style={{color: "#ffffff"}}>
 												{this.state.text}
+											</Text>
+										</Button>
+									</Col>
+								</Row>
+
+								<Row style={{marginTop: 6, marginBottom: 6 ,alignSelf: "center", alignItems: "center"}}>
+									<Col style={{width: "95%", borderBottomWidth: 1, borderColor: "#ffffff"}}>
+									</Col>
+								</Row>
+								<Row>
+									<Col style={{width: "100%"}}>
+										<Button onPress={()=>{ this.props.navigation.navigate('RegisterScreen') }} block  style={{ backgroundColor: "#02A6A4"}}>
+											<Text style={{color: "#ffffff"}}>
+												Registrar tienda 
 											</Text>
 										</Button>
 									</Col>

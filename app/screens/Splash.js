@@ -19,7 +19,6 @@ export default class Splash extends React.Component {
 	}
 
 	async load(){
-		try{
 			let session = await AsyncStorage.getItem('@session');
 			let oldToken = await JSON.parse(session);
 
@@ -37,7 +36,6 @@ export default class Splash extends React.Component {
 					Authorization: oldToken.token
 				}
 			}).then( resp =>{
-				Alert.alert('DEBIG', JSON.stringify(resp._bodyInit))
 				let _bodyInit = JSON.parse(resp._bodyInit);
 				
 				if( resp.status == undefined || resp._bodyInit.token == 'Invalid token' || resp.status == 401 || _bodyInit.error == 'Not Authorized' ){
@@ -45,13 +43,11 @@ export default class Splash extends React.Component {
 					return false;
 				}
 				let session = {
-					token: oldToken.token
+					token: oldToken.token,
+					user: oldToken.user
 				};
 				this.props.navigation.navigate('HomeScreen',  {token: session});
 			});
-		}catch(err){
-			console.log(err);
-		}
 
 	}
 

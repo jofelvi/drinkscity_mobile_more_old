@@ -27,22 +27,6 @@ export default class Home extends Component {
 		super(props);
 	}
 
-	async saveToken(){
-
-		try{
-			let { navigation } = this.props;
-			let {token} = navigation.state.params;
-			await AsyncStorage.setItem("@session",JSON.stringify(token));
-		}catch( err ){
-			console.log(err)
-		}
-	}
-
-	componentWillMount(){
-		this.saveToken();
-
-	}
-
 	componentDidMount(){
 		BackHandler.addEventListener('hardwareBackPress', ()=>{
 			BackHandler.exitApp()
