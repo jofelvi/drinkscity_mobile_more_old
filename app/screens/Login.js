@@ -6,7 +6,8 @@ import {
 	Image,
 	StatusBar,
 	TouchableOpacity,
-	AsyncStorage
+	AsyncStorage,
+	Keyboard
 } from 'react-native';
 
 import {
@@ -89,7 +90,7 @@ export default class Login extends React.Component {
 						user: data.current_user
 					}
 					AsyncStorage.setItem('@session', JSON.stringify(session));
-				    this.props.navigation.navigate('HomeScreen', {token: session});
+				    this.props.navigation.navigate('SelectStoreScreen', {token: session});
 					
 				}
 				else{
@@ -161,7 +162,7 @@ export default class Login extends React.Component {
 								</Row>
 								<Row>
 									<Col style={{width: "100%"}}>
-										<Button disabled={this.state.login} onPress={()=>{ this.requestLogin() }} block  style={{marginTop: 10}}>
+										<Button disabled={this.state.login} onPress={()=>{ Keyboard.dismiss(); this.requestLogin();  }} block  style={{marginTop: 10}}>
 											<Text style={{color: "#ffffff"}}>
 												{this.state.text}
 											</Text>
@@ -175,7 +176,7 @@ export default class Login extends React.Component {
 								</Row>
 								<Row>
 									<Col style={{width: "100%"}}>
-										<Button onPress={()=>{ this.props.navigation.navigate('RegisterScreen') }} block  style={{ backgroundColor: "#02A6A4"}}>
+										<Button onPress={()=>{ this.props.navigation.navigate('FormFuncionario', {accion:'from_login',funcionario: false, side: 'login', titulo: "Registro de tienda - Usuario"}) }} block  style={{ backgroundColor: "#02A6A4"}}>
 											<Text style={{color: "#ffffff"}}>
 												Registrar tienda 
 											</Text>

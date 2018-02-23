@@ -14,6 +14,9 @@ import {
 	Alert
 } from 'react-native'
 
+
+import { store } from '../redux/store';
+import { searchProducts, modelActions } from '../redux/actions';
 String.prototype.capitalize = function(){
 	return this.charAt(0).toUpperCase()+this.slice(1);
 };
@@ -89,5 +92,22 @@ export default class Product extends Model{
 		}
 
 		let resp = super.push('product', 'POST', navigation);
+	}
+
+	async getAll(user_id = null, token){
+		const con = new Connection();
+		let url = con.getUrlApi()+'users/'+user_id+'/products';
+		fetch(url, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'json',
+				Authorization: token
+			}
+		}).then(resp=>{
+			let { _bodyInit } = resp;
+			_bodyInit = (typeof(_bodyInit) == 'string') ? JSON.parse(_bodyInit) : _bodyInit;
+			store.dispatch(searchProducts(_bodyInit));
+		});
 	}
 }

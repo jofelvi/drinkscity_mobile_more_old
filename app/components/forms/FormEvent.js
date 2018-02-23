@@ -23,6 +23,7 @@ import {
 	WebView,
 	StatusBar,
 	StyleSheet,
+	AsyncStorage,
 	PermissionsAndroid
 } from 'react-native'
 import MapView, { Marker } from 'react-native-maps';
@@ -88,7 +89,8 @@ export default class FormEvent extends React.Component{
 				latitudeDelta: 0.015,
 				longitudeDelta: 0.0121,
 			},
-			markers: []
+			markers: [],
+			stores: []
 		}
 		this.componentWillMount()
 
@@ -139,12 +141,16 @@ export default class FormEvent extends React.Component{
 		        	longitude: this.state.event.setAttribute('longitude', markers[0].longitude),
 		        	latitude: this.state.event.setAttribute('latitude', markers[0].latitude)
 		        })
-
-		       	//Alert.alert("coords", "longitud: "+position.coords.longitude+' Longitud State: '+this.state.currentRegion.longitudeDelta+' latitude: '+position.coords.latitude+' accuracy: '+position.coords.accuracy)
 		    },
 		    (error) => alert(error.message),
 		    {enableHighAccuracy: false, timeout: 40000, maximumAge: 20000}
 		);
+
+		let session = await AsyncStorage.getItem('@session');
+		session = await JSON.parse(session);
+		this.setState({
+			stores: session.stores
+		});
 	}
 
 	_onDragMarker(coords){
@@ -153,6 +159,10 @@ export default class FormEvent extends React.Component{
 			latitude: this.state.event.setAttribute('latitude', coordinate.latitude),
 			longitude: this.state.event.setAttribute('longitude', coordinate.longitude)
 		})
+	    this._getDirection( 
+		    { lat: this.state.latitude, lon: this.state.longitude }, 
+		    { lat: this.state.latitude, lon: this.state.longitude } 
+		);
 	}
 
 	_renderMarkers(){
@@ -178,6 +188,28 @@ export default class FormEvent extends React.Component{
 		return 'https://youtube.com/embed/'+id[1];
 	}
 
+	async _getDirection(origin = null, destination = null){
+		this.setState({
+			address: 'Cargando direccion...'
+		})
+		if(origin != null & destination != null){
+			fetch(`https://maps.googleapis.com/maps/api/directions/json?key=AIzaSyDVY2in9_CGre6PDYzILjfi_YCSNrgLQRo&origin=${origin.lat+','+origin.lon}&destination=${destination.lat+','+destination.lon}`,{
+
+			}).then(data => {
+				let { _bodyInit } = data;
+				_bodyInit = ( typeof(_bodyInit) == 'string' ) ? JSON.parse(_bodyInit): _bodyInit;
+				let destination = _bodyInit.routes[0].legs[0];
+				this.setState({
+					address: this.state.event.setAttribute('address', destination.end_address)
+				});
+			});
+	    }else{
+	    	this.setState({
+	    		address: 'Cargando direccion...'
+	    	})
+	    }
+	}
+
 	_onPressPositionMap(coord){
 		var { coordinate } = coord.nativeEvent
 		var { markers } = this.state
@@ -187,13 +219,16 @@ export default class FormEvent extends React.Component{
 			longitude: this.state.event.setAttribute('longitude', coordinate.longitude),
 			latitude: this.state.event.setAttribute('latitude', coordinate.latitude)
 		});
+	    this._getDirection( 
+		    { lat: coordinate.latitude, lon: coordinate.longitude }, 
+		    { lat: coordinate.latitude, lon: coordinate.longitude } 
+		);
 	}
 
 	region(){
 		const { markers } = this.state;
-		//Alert.alert('DEBUG', ''+markers.length);
 		if(markers.length > 1){
-			var coords = markers[1];
+			var coords = markers[0];
 			return {
 				...coords
 			};
@@ -233,6 +268,16 @@ export default class FormEvent extends React.Component{
 							<Item style={{color: "#ffffff" }} label='Evento cultural' value={'evento_cultural'} />
 							<Item style={{color: "#ffffff" }} label='Otros' value={'otros'} /> 
 						</Picker>
+						<Picker
+							mode='dropdown'
+							onValueChange={value => { this.state.event.setAttribute('store_id', value); this.setState({store_id: value}); }}
+							style={{ color: this.props.color }}
+							selectedValue={this.state.store_id}
+							style={{color:"#ffffff"}}
+						>
+							<Item style={{color: "#ffffff" }} label="Seleccione una tienda" value={''} />
+							{ this.state.stores.map( (data, i) => <Item style={{color: "#ffffff" }} label={data.name} key={i} value={data.id} /> ) }
+						</Picker>
 						<Grid>
 							<Row>
 								<Col style={{width: "16%", marginTop: "11%", marginRight: 0}}>
@@ -262,7 +307,7 @@ export default class FormEvent extends React.Component{
 								<Col>
 									<Item floatingLabel>
 										<Label style={{ color: "#ffffff" }}>Direccion</Label>
-										<Input  style={{ color: "#ffffff" }} value={this.state.address} onChangeText={address=>{ this.setState({address: this.state.event.setAttribute('address', address)}); }} multiline={true} numberOfLines={4} />
+										<Input enabled={false} editable={false} style={{ color: "#ffffff" }} value={this.state.address} onChangeText={address=>{ this.setState({address: this.state.event.setAttribute('address', address)}); }} multiline={true} numberOfLines={4} />
 									</Item>
 								</Col>
 							</Row>
@@ -336,7 +381,6 @@ export default class FormEvent extends React.Component{
 					        <MapView
 					          style={styles.map}
 					          initialRegion={this.state.currentRegion}
-					          initialRegion={this.region()}
 					          onPress={ point => this._onPressPositionMap(point)  }
 					        >
 								<Marker   

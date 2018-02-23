@@ -23,7 +23,8 @@ import {
 	Alert,
 	ScrollView,
 	WebView,
-	TouchableOpacity
+	TouchableOpacity,
+	Image
 } from 'react-native';
 
 import YouTube from 'react-native-youtube'
@@ -31,6 +32,7 @@ import { MenuProvider } from 'react-native-popup-menu';
 import { PopMenu } from '../components/PopupMenu'
 
 import FontAwesome, {Icons} from 'react-native-fontawesome';
+import Connection from '../config/connection'
 import Event from '../classes/Event';
 import { store } from '../redux/store';
 
@@ -88,7 +90,39 @@ export default class ListaEventos extends React.Component{
 		});
 	}
 
+	_onUpdateButtonPress = (evento) => {
+
+		this.props.navigation.navigate('FormEvent', { evento, priority: evento.data.priority, onUpdate: this._onUpdate })
+	}
+
+	_loadUrlImageResource(toLoad){
+		const con = new Connection();
+
+		var url ='';
+		if( Array.isArray(toLoad.images.self) && toLoad.images.self.length > 0 ){
+			url = con.getProtocol()+'//'+con.getOnlyUrl()+toLoad.images.self[0].cover_url;
+			
+		}
+		return url;
+	}
+
+	_onDelete = ( evento ) =>{
+		let events = this.state.eventos.filter((event, i)=>{
+			return evento.data.id != event.data.id
+		});
+
+		this.setState({
+			eventos: events
+		});
+
+		del = ( evento instanceof Event ) ? evento : new Event(evento);
+		del.delete();
+
+	}
+
+
 	_renderList(){
+		let con =new Connection();
 		const items = this.state.eventos.map( (data, i)=>{
 			return(
 					<Card>
@@ -96,13 +130,12 @@ export default class ListaEventos extends React.Component{
 							<Left />
 							<Body />
 							<Right>
-								<PopMenu onUpdate={this._onUpdate}  navigation={this.props.navigation} evento={data} eventos={this.state.eventos} />
+								<PopMenu onDelete={this._onDelete}  model={'events'} onUpdatePress={this._onUpdateButtonPress} onUpdate={this._onUpdate}  navigation={this.props.navigation} evento={data} eventos={this.state.eventos} />
 							</Right>
 						</CardItem>
 						<CardItem cardBody>
-							<WebView
-								source={{ uri : this._showVideoByLink(data.data.video_link) }}
-								style={{ height: 300, width: "100%" }}
+							<Image 
+								source={{uri: this._loadUrlImageResource(data.data) }}
 							/>
 						</CardItem>
 						<CardItem>

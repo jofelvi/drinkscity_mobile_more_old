@@ -46,7 +46,7 @@ export default class Splash extends React.Component {
 					token: oldToken.token,
 					user: oldToken.user
 				};
-				this.props.navigation.navigate('HomeScreen',  {token: session});
+				this.props.navigation.navigate('SelectStoreScreen',  {token: session});
 			});
 
 	}

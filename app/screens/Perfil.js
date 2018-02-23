@@ -22,7 +22,8 @@ import {
 	StatusBar,
 	Dimensions,
 	TouchableOpacity,
-	Alert
+	Alert,
+	AsyncStorage
 } from 'react-native';
 
 import FontAwesome, {Icons} from 'react-native-fontawesome';
@@ -59,7 +60,7 @@ export default class Perfil extends React.Component{
 		});
 
 		this.state = {
-			...negocio.data
+			store: null
 		};
 	}
 
@@ -86,6 +87,15 @@ export default class Perfil extends React.Component{
 		});
 	}
 
+	async componentDidMount(){
+		let session = await AsyncStorage.getItem('@session');
+		let {store} = JSON.parse(session);
+		this.setState({
+			store
+		});
+
+	}
+
 	componentWillMount(){
 		BackHandler.removeEventListener('hardwareBackPress', ()=> true);
 		BackHandler.addEventListener('hardwareBackPress', ()=> this.props.navigation.goBack());
@@ -94,7 +104,7 @@ export default class Perfil extends React.Component{
 	render(){
 		const { width, height } = Dimensions.get('screen')
 
-
+		let { store } = this.state;
 
 		return(
 			<Container style={styles.container}>
@@ -130,7 +140,7 @@ export default class Perfil extends React.Component{
 									multiline={true}
 									numberOfLines={2}
 									style={{color: "#ffffff"}}
-									value={this.state.descroption}
+									value={ (store !== null) ? store.description : 'Cargando...' }
 									onChangeText={text => { this.setState({description: negocio.setAttribute('description', text) }); }}
 								/>
 							</Item>
@@ -140,7 +150,7 @@ export default class Perfil extends React.Component{
 								<Label style={{color: "#ffffff"}}> Telefono </Label>
 								<Input
 									style={{color: "#ffffff"}}
-									value={this.state.phone}
+									value={(store !== null) ? store.phone : 'Cargando...'}
 									onChangeText={ text => { this.setState({phone: negocio.setAttribute('phone', phone) }); } }
 							
 								/>
@@ -152,7 +162,7 @@ export default class Perfil extends React.Component{
 									<Label style={{color: "#ffffff"}}> Dias de atencion </Label>
 									<Input
 										style={{color: "#ffffff"}}
-										value={this.state.laboral_days}
+										value={(store !== null) ? store.days_opened : 'Cargando...'}
 										onChangeText={ text =>{ this.setState( {laboral_days: negocio.setAttribute('laboral_days',text)} ); } }
 									/>
 								</Item>
@@ -162,7 +172,7 @@ export default class Perfil extends React.Component{
 									<Label style={{color: "#ffffff"}}> Horario </Label>
 									<Input
 										style={{color: "#ffffff"}}
-										value={this.state.hourary}
+										value={ (store !== null) ? store.time_opened : 'Cargando...' }
 										onChangeText={text =>{ this.setState({hourary: negocio.setAttribute( 'hourary', text ) }); } }
 								/>
 								</Item>
@@ -171,7 +181,7 @@ export default class Perfil extends React.Component{
 						<Grid style={{marginTop: 5, marginLeft: 7}}>
 							<Col style={{width: "10%"}}>
 								<CheckBox 
-									checked={this.state.has_delivery} 
+									checked={ (store !== null && store.delivery === true)  } 
 									onPress={()=>{  this.setState({ has_delivery: negocio.setAttribute('has_delivery', !this.state.has_delivery) }); }} 
 									color={"#02A6A4"}
 								/>

@@ -21,7 +21,7 @@ String.prototype.capitalize = function(){
 export default class Store extends Model{
 
 	constructor( data = false){
-		super('products', data);
+		super('store', data);
 
 		/**
 		 * MODELO DE LA TABLA DE PRODUCTOS ALOJADA EN EL SERVIDOR

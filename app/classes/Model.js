@@ -162,7 +162,6 @@ export default class Model{
 
 		let json = JSON.stringify(this.data)
 		const body = '{"'+param+'":'+json+'}';
-
 		return await fetch( connection.getUrlApi(this._model), {
 			method,
 			headers:{
@@ -173,7 +172,7 @@ export default class Model{
 			body: body
 		}).then( resp => {
 			let valid = this._validSessionOrKill(resp, navigation);
-
+			data = resp;
 			if((data.status == 200 || data.status == '200') || (data.status = '201' || data.status == 201)){
 				Alert.alert('Confirmacion', 'Los datos han sido guardados correctamente', [
 					{

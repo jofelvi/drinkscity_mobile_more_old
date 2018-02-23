@@ -1,3 +1,4 @@
+
 import {
   Menu,
   MenuOptions,
@@ -33,7 +34,7 @@ export class PopMenu extends React.Component {
 		      </MenuTrigger>
 		      <MenuOptions>
 		        <MenuOption 
-		        	onSelect={()=>{this.props.navigation.navigate('FormEvent', {onUpdate: this.props.onUpdate ,meth: 'PUT', titulo: 'Listado de eventos publicados', side: 'Home', evento: this.props.evento, priority: this.props.evento.data.priority }) }} 
+		        	onSelect={()=>{ this.props.onUpdatePress(this.props.evento); }} 
 		        >
 		        	<Text style={{fontSize: 21}}>Editar</Text>
 		        </MenuOption>
@@ -43,11 +44,7 @@ export class PopMenu extends React.Component {
 			        		{
 			        			text: 'Aceptar',
 			        			onPress: ()=>{ 
-			        				let events = this.props.eventos.filter((data, i)=>{
-			        					return data.data.id != this.props.evento.data.id;
-			        				});
-			        				this.props.evento.delete(); 
-			        				store.dispatch(modelActions(events, 'events'));
+			        				this.props.onDelete(this.props.evento);
 			        			}	
 			        		},
 			        		{

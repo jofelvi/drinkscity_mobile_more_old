@@ -25,12 +25,16 @@ import {
 	StatusBar,
 	Image,
 	TouchableOpacity,
+	AsyncStorage
 } from 'react-native';
 
 import Product from '../classes/Product'
 import { store } from '../redux/store';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import Connection from '../config/connection';
+
+import { MenuProvider } from 'react-native-popup-menu';
+import { PopMenu } from '../components/PopupMenu'
 const moment = require('moment')
 import BackHandler from 'BackHandler';
 
@@ -55,9 +59,13 @@ export default class Productos extends React.Component{
 		});
 	}
 
-	componentWillMount(){
+	async componentWillMount(){
 		let instance = new Product;
-		instance.allToRedux();
+		let session = await AsyncStorage.getItem('@session');
+		session = await JSON.parse(session);
+		const { token, user } = session;
+
+		instance.getAll(user.id, token);
 		BackHandler.removeEventListener('hardwareBackPress', ()=> true);
 		BackHandler.addEventListener('hardwareBackPress', ()=> this.props.navigation.goBack());
 	}
@@ -73,32 +81,62 @@ export default class Productos extends React.Component{
 		return url;
 	}
 
+	_onUpdate = (data) =>{
+		let events = this.state.products.map((event) =>{
+			if(event.data.id == data.id)
+				return new Product(data);
+			return event;
+		});
+
+		this.setState({
+			products: products
+		});
+	}
+
+	_onUpdatePress = (producto) =>{
+		this.props.navigation.navigate('Estandar', {producto: new Product(producto), titulo: 'Editar producto', priority: producto.priority })
+	}
+
+	_onDelete = (dato) =>{
+
+		let events = this.state.products.filter((producto, i)=>{
+			return producto.id != dato.id
+		});
+
+		this.setState({
+			products: events
+		})
+		
+		del = ( dato instanceof Product ) ? dato : new Product(dato);
+		del.delete();
+
+	}
+
+
+
 	_renderCol(dato){
-		let day = moment(dato.created_at).format('DD-MM-YYYY');
+		dato = ( dato instanceof Product ) ? dato : new Product(dato);
+		let day = moment(dato.data.created_at).format('DD-MM-YYYY');
 		return(
 			<Col style={{width: "100%"}}>
 				<Card>
 					<CardItem>
 						<Body>
 							<H3 style={{fontWeight: 'bold'}}>
-								{ dato.name }
+								{ dato.data.name }
 							</H3>
 							<Text note>
 								{' \n'}
 								<FontAwesome>{Icons.calendar}</FontAwesome> {day}
 							</Text>
 						</Body>
-						<Right>
-							<Button transparent onPress={()=>{ this.props.navigation.navigate('Estandar', {producto: dato, tipo: "ESTANDAR", titulo: dato.name }) } }>
-								<Text>
-									<FontAwesome style={{color: "#02A6A4", fontSize: 20}}>{Icons.pencil}</FontAwesome>
-								</Text>
-							</Button>
-						</Right>
+							<Right>
+								<PopMenu onDelete={this._onDelete} model={'products'} onUpdatePress={this._onUpdatePress} onUpdate={this._onUpdate}  navigation={this.props.navigation} evento={dato.data} />
+							</Right>
 					</CardItem>
 					<CardItem cardBody>
 							<Image
-								source={{uri: this._loadUrlImageResource(dato)}}
+								source={{uri: this._loadUrlImageResource(dato.data)}}
 								style={{ height: 200, width: "100%", flex: 1 }}
 								/>
 
@@ -114,7 +152,7 @@ export default class Productos extends React.Component{
 								}}
 							>
 							<Text style={{color: "#ffffff", fontWeight: 'bold', marginLeft: 3}} >
-								{dato.description}
+								{dato.data.description}
 							</Text>
 							</View>
 					</CardItem>
@@ -122,7 +160,7 @@ export default class Productos extends React.Component{
 						<Left>
 							<Button transparent>
 								<Text style={{fontWeight: 'bold', fontSize: 15, color: "#02A6A4"}}>
-									$ {dato.price}
+									$ {dato.data.price}
 								</Text>
 							</Button>
 						</Left>
@@ -130,7 +168,7 @@ export default class Productos extends React.Component{
 							<Button transparent>
 								<Text>
 									<FontAwesome style={{fontSize: 20, color: "#02A6A4"}}>{Icons.bookmark}</FontAwesome>
-									<Text style={{fontWeight: 'bold', fontSize: 15, color: "#02A6A4"}}>{' '+dato.category}</Text>
+									<Text style={{fontWeight: 'bold', fontSize: 15, color: "#02A6A4"}}>{' '+dato.data.category}</Text>
 								</Text>
 							</Button>
 						</Body>
@@ -145,7 +183,7 @@ export default class Productos extends React.Component{
 		if( products.length >0){
 			const cards = products.map( ( dato, i ) =>{
 
-				return <Row>{this._renderCol(dato)}</Row>
+				return <Row>{this._renderCol( dato )}</Row>
 			});
 			return cards;
 		}
@@ -161,12 +199,14 @@ export default class Productos extends React.Component{
 		const { width, height } = Dimensions.get('screen')
 		
 		return(
+			<MenuProvider>
 			<View style={styles.container}>
 				<StatusBar translucent backgroundColor={'#02A6A4'} />
 				<Content>
 					{this._renderCards()}
 				</Content>
 			</View>
+			</MenuProvider>
 		);
 	}
 

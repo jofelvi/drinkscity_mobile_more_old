@@ -18,6 +18,7 @@ import {
 
 import MainHeader from '../components/MainHeader';
 import Botonera from '../components/Botonera';
+import Connection from '../config/connection'
 var BackHandler = require('BackHandler');
 
 
@@ -25,6 +26,9 @@ export default class Home extends Component {
 
 	constructor(props){
 		super(props);
+		this.state={
+			store: null
+		}
 	}
 
 	componentDidMount(){
@@ -33,9 +37,19 @@ export default class Home extends Component {
 		});
 	}
 
+	async componentWillMount(){
+		let session = await AsyncStorage.getItem('@session');
+		session = await JSON.parse(session);
+
+		this.setState({
+			store: session.store
+		});
+	}
+
 	componentWillUnmount(){
 		BackHandler.removeEventListener('hardwareBackPress', ()=> false);
 	}
+
 
 	async close(){
 
@@ -59,7 +73,6 @@ export default class Home extends Component {
 		]);
 
 	}
-
 	render(){
 		const { width, height } = Dimensions.get('screen')
 		return(
@@ -67,7 +80,7 @@ export default class Home extends Component {
 			<View style={styles.container}>
 				<StatusBar translucent={true} backgroundColor={'#000000'}/>
 				<MainHeader {...this.props} />
-				<Content>
+				<Content style={{marginTop: -23, flex: 1}}>
 					<Botonera  {...this.props} />
 				</Content>
 					<View style={{ alignSelf: "center",alignContent: "center", alignItems: "center", flex: 0.1, left: 0, right: 0 ,position: "relative", bottom: 0, flexDirection: 'row', alignItems: "center" ,marginBottom : 0}}>

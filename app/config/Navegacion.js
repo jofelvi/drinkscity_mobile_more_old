@@ -16,6 +16,7 @@ import Splash from '../screens/Splash';
 import SlideScreen from '../screens/SlideScreen';
 import StoreRegister from '../screens/StoreRegister';
 import Ventas from '../screens/Ventas';
+import SelectStore from '../screens/SelectStore';
 
 import { Platform, StatusBar } from 'react-native';
 
@@ -81,6 +82,12 @@ const Navigation = StackNavigator({
 	},
 	RegisterScreen: {
 		screen: StoreRegister
+	},
+	SelectStoreScreen: {
+		screen: SelectStore,
+		navigationOptions: {
+			header: false
+		}
 	}
 },{
    cardStyle: {

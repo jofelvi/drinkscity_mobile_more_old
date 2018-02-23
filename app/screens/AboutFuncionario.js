@@ -28,6 +28,8 @@ import {
 	ScrollView
 } from 'react-native';
 
+
+import Connection from '../config/connection';
 import FontAwesome, {Icons} from 'react-native-fontawesome';
 import Funcionario from '../classes/Funcionario';
 import { funcionario } from '../redux/actions';
@@ -53,11 +55,44 @@ export default class AboutFuncionario extends React.Component{
 		let func = ( state.params.funcionario != false ) 
 			? state.params.funcionario 
 			: {fullname: '', email: '', password: '', phone: '', role: 'guest', rut: '', address: ''};
-
+		
 		this.state = {
 			funcionario: new Funcionario(func),
-			...func
+			...func,
+			markers: []
 		}
+
+		if( navigation.state.params.side == 'login' )
+			this.setState({ role: this.state.funcionario.setAttribute('role', 'store_admin' ) });
+
+	}
+
+	async _saveUserToStore(){
+		const con = new Connection();
+
+		const body = '{"user":'+JSON.stringify(this.state.funcionario.getData())+'}';
+		let resp = fetch( con.getUrlApi('users'), {
+			method: 'POST',
+			headers:{
+				'Content-Type': 'application/json',
+				Accept: 'json'
+			},
+			body
+		}).then(resp =>{
+			let data = ( typeof(resp) == 'string' ) ? JSON.parse(resp) : resp;
+			if( data.ok )
+			{
+				this.props.navigation.goBack();
+				return false;
+			}else{
+				Alert.alert('Advertencia', 'Algo ha salido mal; estamos trabajando para solventar este incidente', [
+					{
+						text: 'Aceptar',
+						onPress: ()=> { this.props.navigation.goBack(); }
+					}
+				]);
+			}
+		});
 	}
 	
 	componentWillMount(){
@@ -66,7 +101,10 @@ export default class AboutFuncionario extends React.Component{
 		BackHandler.addEventListener('hardwareBackPress', ()=> this.props.navigation.goBack());
 	}
 
-	_accion(accion){
+	_accion(accion, resp){
+
+		const { state } = this.props.navigation;
+
 		eval(accion);
 		const { navigation } = this.props;
 
@@ -166,7 +204,10 @@ export default class AboutFuncionario extends React.Component{
 							selectedValue={this.state.role}
 						>
 							{
-								this.state.funcionario.getRoles().map( (data, i) =>  <Item key={i} style={{color: "#ffffff"}}  label={data.description} value={data.name} /> )
+							  (this.props.navigation.state.params.side != 'login')	?
+							  	this.state.funcionario.getRoles().map( (data, i) =>  
+							  		<Item key={i} style={{color: "#ffffff"}}  label={data.description} value={data.name} /> 
+							  	) : <Item key={1} style={{color: "#ffffff"}}  label={'Store admin'} value={'store_admin'} />
 							}
 						</Picker>
 						<Item floatingLabel>
@@ -177,7 +218,10 @@ export default class AboutFuncionario extends React.Component{
 
 					<Button onPress={()=>{ 
 							const { navigation } = this.props;
-							if( navigation.state.params.accion == 'crear' )
+							//from_login
+							if( navigation.state.params.accion == 'from_login' )
+								this._saveUserToStore();
+							else if( navigation.state.params.accion == 'crear' )
 								this._saveUser();
 							else
 								this.state.funcionario.update('PUT', navigation); 

@@ -118,7 +118,6 @@ export default class onQRScann extends React.Component{
 			},
 			body: body
 		}).then( resp =>{
-			Alert.alert('DEBUG-RESP', JSON.stringify(resp));
 			if(resp.status == 200 || resp.status == '200'){
 				Alert.alert('Correcto', 'La orden ha sido correctamente validada', [
 					{
@@ -134,7 +133,7 @@ export default class onQRScann extends React.Component{
 	validateOrder(){
 		let { order } = this.state;
 		if( order.order_status_id != 3 || order.order_status_id != '3' ){
-			Alert.alert('Error', 'Las unicas ordenes a validar son aquellas que se encuentran aprobadas');
+			Alert.alert('Error', 'Entrada y/o productos ya canjeados');
 			return false;
 		}
 
