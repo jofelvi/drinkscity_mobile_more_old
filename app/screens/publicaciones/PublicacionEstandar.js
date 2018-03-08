@@ -29,7 +29,7 @@ export default class PublicacionEstandar extends React.Component{
 	static navigationOptions = ({navigation}) => ({
 		title: `${navigation.state.params.titulo}`,
 		headerTintColor: "#ffffff",
-		headerStyle: { backgroundColor: "#02A6A4" }
+		headerStyle: { backgroundColor: "#01DAC9" }
 	})
 
 	constructor(props){
@@ -44,7 +44,7 @@ export default class PublicacionEstandar extends React.Component{
 	_renderForm(){
 		 const { state } = this.props.navigation
 
-		return <PubEstandar priority={state.params.priority} color={'#ffffff'} producto={state.params.producto} />
+		return <PubEstandar from={state.params.from} item_type={state.params.item_type} priority={state.params.priority} color={'#ffffff'} producto={state.params.producto} />
 	}
 
 	render(){

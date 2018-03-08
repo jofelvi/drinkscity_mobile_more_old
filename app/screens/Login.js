@@ -46,7 +46,11 @@ export default class Login extends React.Component {
 			password: null,
 			loading: false,
 			text: 'Ingresar',
-			sessionActive: false
+			sessionActive: false,
+			passborderColor: "#ffffff",
+			passchangeColor: true,
+			mailborderColor: "#ffffff",
+			mailchangeColor: true
 		};
 
 
@@ -118,18 +122,20 @@ export default class Login extends React.Component {
 			<View style={styles.container}>
 				<StatusBar translucent backgroundColor={'#111111'} />
 				<Container>
-					<Content>
+					<Content style={{marginTop: "22%"}}>
 						<Form>
 							<Grid>
-								<Row>
-									<Col>
+								<Row style={{width: "100%"}}>
+									<Col style={{width: "100%"}}>
 										<View style={{alignSelf: "center"}}>
 											<Image
-												source={require('../assets/img/drinkscity_logo.png')}
+												source={require('../assets/img/Logo_Drinks-City.png')}
 												style={{
 													marginTop: 7,
-													width: 185,
-													height: 190
+													width: 290,
+													height: 190,
+													flex: 1,
+													resizeMode: 'contain'
 												}}
 											/>
 										</View>
@@ -137,11 +143,14 @@ export default class Login extends React.Component {
 								</Row>
 								<Row>
 									<Col style={{width: "95%"}}>
-										<Item floatingLabel>
+										<Item floatingLabel style={{ borderColor: this.state.mailborderColor }}>
 											<Label style={{color: "#ffffff"}}>Correo electronico</Label>
 											<Input 
 												style={{color: "#ffffff"}}
-												onChangeText={text =>{ this.setState({ email: text }) } }
+												onFocus={ ev => { this.setState({ mailborderColor: '#01DAC9' }) } }
+												onBlur={ br =>{ this.setState({ mailborderColor: ( (this.state.mailchangeColor) ? '#ffffff' : '#01DAC9' ) }) } }
+												
+												onChangeText={text =>{ this.setState({ email: text }); this.setState({ mailchangeColor: (text.length == 0) }); } }
 											/>
 
 										</Item>
@@ -149,20 +158,22 @@ export default class Login extends React.Component {
 								</Row>
 								<Row>
 									<Col style={{width: "95%"}}>
-										<Item floatingLabel>
+										<Item floatingLabel style={{ borderColor: this.state.passborderColor }}>
 											<Label style={{color: "#ffffff"}}>Clave</Label>
 											<Input 
-												style={{color: "#ffffff"}}
+												style={{color: "#ffffff", borderColor: this.state.passborderColor }}
+												onFocus={ ev => { this.setState({ passborderColor: '#01DAC9' }) } }
+												onBlur={ br =>{ this.setState({ passborderColor: ( (this.state.passchangeColor) ? '#ffffff' : '#01DAC9' ) }) } }
 												secureTextEntry={true}
-												onChangeText={text =>{ this.setState({ password: text }) } }
+												onChangeText={text =>{ this.setState({ password: text });  this.setState({ passchangeColor: (text.length == 0) }); } }
 											/>
 
 										</Item>
 									</Col>
 								</Row>
-								<Row>
-									<Col style={{width: "100%"}}>
-										<Button disabled={this.state.login} onPress={()=>{ Keyboard.dismiss(); this.requestLogin();  }} block  style={{marginTop: 10}}>
+								<Row style={{alignItems: "center", alignSelf: "center", alignContent: "center"}}>
+									<Col style={{width: "84%"}}>
+										<Button disabled={this.state.login} onPress={()=>{ Keyboard.dismiss(); this.requestLogin();  }} block  style={{marginTop: 10, backgroundColor: "#02A6A4"}}>
 											<Text style={{color: "#ffffff"}}>
 												{this.state.text}
 											</Text>
@@ -171,14 +182,14 @@ export default class Login extends React.Component {
 								</Row>
 
 								<Row style={{marginTop: 6, marginBottom: 6 ,alignSelf: "center", alignItems: "center"}}>
-									<Col style={{width: "95%", borderBottomWidth: 1, borderColor: "#ffffff"}}>
+									<Col style={{width: "84%", borderBottomWidth: 1, borderColor: "#ffffff"}}>
 									</Col>
 								</Row>
-								<Row>
-									<Col style={{width: "100%"}}>
+								<Row style={{alignItems: "center", alignSelf: "center", alignContent: "center"}}>
+									<Col style={{width: "84%"}}>
 										<Button onPress={()=>{ this.props.navigation.navigate('FormFuncionario', {accion:'from_login',funcionario: false, side: 'login', titulo: "Registro de tienda - Usuario"}) }} block  style={{ backgroundColor: "#02A6A4"}}>
 											<Text style={{color: "#ffffff"}}>
-												Registrar tienda 
+												Registrar
 											</Text>
 										</Button>
 									</Col>

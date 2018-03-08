@@ -26,21 +26,23 @@ import {
 	TouchableOpacity,
 	Alert,
 	ScrollView,
-	Root
+	Root,
+	AsyncStorage
 } from 'react-native';
 
 import FontAwesome, {Icons} from 'react-native-fontawesome';
 import Funcionario from '../classes/Funcionario';
+import Connection from '../config/connection';
 import { store } from '../redux/store';
 
-var BackHander = require('BackHandler')
+var BackHandler = require('BackHandler')
 
 export default class Funcionarios extends React.Component{
 
 	static navigationOptions = ({navigation}) => ({
 		title: `${navigation.state.params.titulo}`,
 		headerTintColor: "#ffffff",
-		headerStyle: { backgroundColor: "#02A6A4" },
+		headerStyle: { backgroundColor: "#01DAC9" },
 	});
 
 	constructor(props){
@@ -53,6 +55,7 @@ export default class Funcionarios extends React.Component{
 			validadores: [],
 			rrpp: [],
 			complete: false,
+			users: []
 		};
 
 		store.subscribe( ()=>{
@@ -70,8 +73,36 @@ export default class Funcionarios extends React.Component{
 		}
 	}
 
+	async componentDidMount(){
+		let con = new Connection();
+		let session = await AsyncStorage.getItem('@session');
+		let { token, store } = await JSON.parse(session);
+		let resp = await fetch( con.getUrlApi('stores/'+store.id), {
+			headers:{
+				method: 'GET',
+				'Content-Type': 'application/json',
+				Accept: 'json',
+				Authorization: token.token
+			}
+		} ).then( resp => {
+
+			if(resp.status == 200 || resp.status == '200'){
+				let _bodyInit = JSON.parse(resp._bodyInit);
+				let { users } = _bodyInit;
+				this.setState({
+					funcionarios: users
+				});
+				//Alert.alert('DEBUG', JSON.stringify(this.state.funcionarios))
+			}
+
+		});
+	}
+
 	componentWillMount(){
 		let dat = this.funcionario.getAll();
+
+		BackHandler.removeEventListener('hardwareBackPress', ()=> true);
+		BackHandler.addEventListener('hardwareBackPress', ()=> this.props.navigation.goBack());
 	}
 
 	onDelete(func){
@@ -92,6 +123,7 @@ export default class Funcionarios extends React.Component{
 	_renderListItems(){	
 		const funcs = ( typeof(this.state.funcionarios) == 'string' ) ? JSON.parse(this.state.funcionarios) : this.state.funcionarios;
 		const list = funcs.map( data =>{
+			if( data.role == 'validator' || data.role == 'rrpp' )
 			return(
 				<ListItem key={data.id}>
 					<Body>

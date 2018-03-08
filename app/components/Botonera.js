@@ -126,7 +126,7 @@ export default class Botonera extends React.Component{
 		}
 		return(
 			<View 
-				style={{marginTop: "4%", marginLeft: "3%"}}
+				style={{marginTop: "20%", marginLeft: "3%"}}
 				
 			>
 					<Grid>

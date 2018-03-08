@@ -40,7 +40,7 @@ export default class onQRScann extends React.Component{
 	static navigationOptions = {
 		title: 'Verificacion de orden',
 		headerTintColor: "#ffffff",
-		headerStyle: { backgroundColor: "#02A6A4" }
+		headerStyle: { backgroundColor: "#01DAC9" }
 	}
 
 

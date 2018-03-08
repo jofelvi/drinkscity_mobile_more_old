@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import {
 	Alert,
-	StatusBar
+	StatusBar,
+	ScrollView
 } from 'react-native';
 
 import {
@@ -12,7 +13,8 @@ import {
 	Grid,
 	Text,
 	Card,
-	CardItem
+	CardItem,
+	H3
 } from 'native-base';
 
 
@@ -25,9 +27,9 @@ import {
 export default class Graphics extends Component{
 
 	static navigationOptions = ({navigation})=> ({
-		title:  'Graficos estadisticos de ventas',
+		title:  'GRAFICOS ESTADISTICOS DE VENTA',
 		headerTintColor: "#ffffff",
-		headerStyle: { backgroundColor: "#02A6A4" }
+		headerStyle: { backgroundColor: "#01DAC9" }
 	});
 
 	constructor(props){
@@ -53,6 +55,7 @@ export default class Graphics extends Component{
 	componentWillMount(){
 		const { products } = this.props.navigation.state.params;
 		let len = products.length;
+
 		for(let i = 0; i< len; i++){
 
 			if( products[i] != null ){
@@ -61,26 +64,30 @@ export default class Graphics extends Component{
 						let aux = products[j];
 						products[j] = products[i];
 						products[i] = aux;
-					}else if( (products[i].validates < products[j].validates) ){
-						let aux = products[i];
-						products[i] = products[j];
-						products[j] = aux; 
+					}else if( (typeof(products[i]) == 'object') && (typeof(products[j]) =='object' ) ){
+						if((products[i].validates > products[j].validates)){
+							let aux = products[i];
+							products[i] = products[j];
+							products[j] = aux; 
+						}
 					}
 				} // FIN DEL FOR INTERNO
 			} // FIN DEL PRIMER IF
 		} // FIN DEL PRIMER FOR
 
+		//Alert.alert('DEBUG-2', JSON.stringify(products))
 
 		let data = [];
 		for(let i = 1; i < 7; i++){
-			data.push({x: i, y: products[i].validates, width: 6});
+			if( typeof(products[i])  == 'object' )
+				data.push({x: i, y: 8, width: 6});
 		}
 		//Alert.alert('DEBUG', JSON.stringify(this.state.data));
 		//
-		this.setState({
+		/*this.setState({
 			data: data,
 			products
-		});
+		});*/
 	}
 
 	render(){
@@ -88,6 +95,22 @@ export default class Graphics extends Component{
 		return(
 			<View style={styles.container}>
 				<StatusBar translucent backgroundColor={'#02A6A4'} />
+				<ScrollView>
+				<Card >
+					<CardItem style={{width: "100%"}}>
+						<VictoryChart 
+							theme={VictoryTheme.material} 
+							domain={{ x: [1, 7], y: [0, 6] }}
+						>
+							<VictoryBar 
+								categories={{y: this.renderCategories()}}
+								alignment={"start"}
+								data={this.state.data}
+								animate={{ duration: 2000 }}
+							/>
+						</VictoryChart>
+					</CardItem>
+				</Card>
 				<Card>
 					<CardItem style={{width: "100%"}}>
 						<VictoryChart 
@@ -103,7 +126,22 @@ export default class Graphics extends Component{
 						</VictoryChart>
 					</CardItem>
 				</Card>
-
+				<Card>
+					<CardItem style={{width: "100%"}}>
+						<VictoryChart 
+							theme={VictoryTheme.material} 
+							domain={{ x: [1, 7], y: [0, 6] }}
+						>
+							<VictoryBar 
+								categories={{y: this.renderCategories()}}
+								alignment={"start"}
+								data={this.state.data}
+								animate={{ duration: 2000 }}
+							/>
+						</VictoryChart>
+					</CardItem>
+				</Card>
+				</ScrollView>
 			</View>
 		);
 	}

@@ -9,9 +9,9 @@ export default class Connection{
 		this.data = {
 			protocol: 'http:',
 			secure_protocol: 'https:',
-			host: '45.55.63.230/api/v1',
+			host: 'www.drinkscity.cl:36521/api/v1',
 			port: 36572,
-			onlyUrl: '45.55.63.230',
+			onlyUrl: 'www.drinkscity.cl:36521',
 			onSession: false,
 			token: null
 		}

@@ -23,6 +23,26 @@ export class PopMenu extends React.Component {
 		super(props);
 	}
 
+	menuEvents(){
+		if(this.props.model == 'events'){
+			let { state } =this.props.navigation;
+			return(
+				<View>
+			        <MenuOption 
+			        	onSelect={()=>{ this.props.navigation.navigate('Estandar',{from: 'events',product: false,item_type: 'Events', tipo: "ESTANDAR", titulo: "PRODUCTOS POR EVENTO", dato: false, priority: 0}) }} 
+			        >
+			        	<Text style={{fontSize: 21}}>Crear producto</Text>
+			        </MenuOption>
+			        <MenuOption 
+			        	onSelect={()=>{ this.props.navigation.navigate('Entrada',{from: 'events',event: this.props.evento, action: 'PUT' ,item_type: 'Events', tipo: "ESTANDAR", titulo: "PRODUCTOS POR EVENTO", dato: false, priority: 0}) }} 
+			        >
+			        	<Text style={{fontSize: 21}}>Crear entradas</Text>
+			        </MenuOption>
+		        </View>
+			);
+		}
+	}
+
 	render(){
 		return(
 		  <View>
@@ -38,6 +58,7 @@ export class PopMenu extends React.Component {
 		        >
 		        	<Text style={{fontSize: 21}}>Editar</Text>
 		        </MenuOption>
+		        {this.menuEvents()}
 		        <MenuOption 
 		        	onSelect={()=>{
 		        		Alert.alert('Advertencia', '¿Esta completamente seguro de eliminar esto?', [

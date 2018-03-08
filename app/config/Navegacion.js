@@ -17,6 +17,10 @@ import SlideScreen from '../screens/SlideScreen';
 import StoreRegister from '../screens/StoreRegister';
 import Ventas from '../screens/Ventas';
 import SelectStore from '../screens/SelectStore';
+import Entrada from '../screens/Entrada';
+import PorProducto from '../screens/PorProducto';
+import Portada from '../screens/Portada';
+import DetallesVentas from './DetallesVentas';
 
 import { Platform, StatusBar } from 'react-native';
 
@@ -85,14 +89,29 @@ const Navigation = StackNavigator({
 	},
 	SelectStoreScreen: {
 		screen: SelectStore,
-		navigationOptions: {
-			header: false
+			navigationOptions: {
+			title:  'MIS TIENDAS',
+			headerTintColor: "#ffffff",
+			headerStyle: { backgroundColor: "#01DAC9" },
+			headerLeft: ()=> null
 		}
+	},
+	Entrada:{
+		screen: Entrada
+	},
+	PorProducto: {
+		screen: PorProducto
+	},
+	Detalles:{
+		screen: DetallesVentas,
+		navigationOptions:{
+			headerTintColor: "#ffffff",
+			title: 'Mis ventas'
+		}
+	},
+	portada: {
+		screen: Portada
 	}
-},{
-   cardStyle: {
-     paddingTop: Platform.OS === 'ios' ? 0 : StatusBar.currentHeight
-   }
 });
 
 export {

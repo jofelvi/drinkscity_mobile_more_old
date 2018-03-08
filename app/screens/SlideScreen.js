@@ -96,6 +96,7 @@ export default class SlideScreen extends Component{
 		   	const resizeMode = 'cover';
 		    
 		   return(
+		   	<View>
 				<Swiper 
 					style={styles.wrapper}
 					style={styles.wrapper} 
@@ -108,45 +109,26 @@ export default class SlideScreen extends Component{
 				>
 		          <View style={styles.slide} title={<Text numberOfLines={1}>Aussie tourist dies at Bali hotel</Text>}>
 		            <Image resizeMode='stretch' style={styles.image} source={require('../assets//img/5.jpg')} />
-				  	<Button onPress={()=>{ this.props.navigation.navigate('RootScreen') }} block  style={{backgroundColor: "#02A6A4" ,  width: "95%",flex: 1, position: "absolute", bottom: 27, alignSelf: "center", alignContent: "center"}}>
-				  		<Text>
-				  			Ingresar <FontAwesome>{Icons.arrowRight}</FontAwesome>
-				  		</Text>
-				  	</Button>	
 				  </View>
 		          <View style={styles.slide} title={<Text numberOfLines={1}>Aussie tourist dies at Bali hotel</Text>}>	            
-		            <Image resizeMode='stretch' style={styles.image} source={require('../assets//img/4.jpg')} />
-				  	<Button onPress={()=>{ this.props.navigation.navigate('RootScreen') }} block  style={{backgroundColor: "#02A6A4" ,  width: "95%",flex: 1, position: "absolute", bottom: 27, alignSelf: "center", alignContent: "center"}}>
-				  		<Text>
-				  			Ingresar <FontAwesome>{Icons.arrowRight}</FontAwesome>
-				  		</Text>
-				  	</Button>	
+		            <Image resizeMode='stretch' style={styles.image} source={require('../assets//img/4.jpg')} />	
 				  </View>
 		          <View style={styles.slide} title={<Text numberOfLines={1}>Aussie tourist dies at Bali hotel</Text>}>	          
 		            <Image resizeMode='stretch' style={styles.image} source={require('../assets//img/3.jpg')} />
-				  	<Button onPress={()=>{ this.props.navigation.navigate('RootScreen') }} block  style={{backgroundColor: "#02A6A4" ,  width: "95%",flex: 1, position: "absolute", bottom: 27, alignSelf: "center", alignContent: "center"}}>
-				  		<Text>
-				  			Ingresar <FontAwesome>{Icons.arrowRight}</FontAwesome>
-				  		</Text>
-				  	</Button>	
 				  </View>
 		          <View style={styles.slide} title={<Text numberOfLines={1}>Aussie tourist dies at Bali hotel</Text>}>	            
-		            <Image resizeMode='stretch' style={styles.image} source={require('../assets//img/2.jpg')} />
-				  	<Button onPress={()=>{ this.props.navigation.navigate('RootScreen') }} block  style={{backgroundColor: "#02A6A4" ,  width: "95%",flex: 1, position: "absolute", bottom: 27, alignSelf: "center", alignContent: "center"}}>
-				  		<Text>
-				  			Ingresar <FontAwesome>{Icons.arrowRight}</FontAwesome>
-				  		</Text>
-				  	</Button>	
+		            <Image resizeMode='stretch' style={styles.image} source={require('../assets//img/2.jpg')} />	
 				  </View>
 		          <View style={styles.slide} title={<Text numberOfLines={1}>Aussie tourist dies at Bali hotel</Text>}>
 		            <Image resizeMode='stretch' style={styles.image} source={require('../assets//img/1.jpg')} />
-				  	<Button onPress={()=>{ this.props.navigation.navigate('RootScreen') }} block  style={{backgroundColor: "#02A6A4" ,  width: "95%",flex: 1, position: "absolute", bottom: 27, alignSelf: "center", alignContent: "center"}}>
+				  </View>
+				</Swiper>
+				  	<Button onPress={()=>{ this.props.navigation.navigate('RootScreen') }} block  style={{backgroundColor: "#01DAC9" ,  width: "95%",flex: 1, position: "absolute", bottom: 27, alignSelf: "center", alignContent: "center"}}>
 				  		<Text>
 				  			Ingresar <FontAwesome>{Icons.arrowRight}</FontAwesome>
 				  		</Text>
-				  	</Button>
-				  </View>
-				</Swiper>
+				  	</Button>	
+				</View>
 		   );
 	}
 }

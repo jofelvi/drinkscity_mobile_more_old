@@ -60,6 +60,7 @@ export default class Model{
 
 	_validSessionOrKill(resp, navigation = null){
 		let  _bodyInit  = JSON.parse(resp._bodyInit);
+		//Alert.alert('D-4', JSON.stringify(resp))
 		if( resp.status == undefined || resp._bodyInit.token == 'Invalid token' || resp.status == 401 || _bodyInit.error == 'Not Authorized' ){
 			if( navigation !== null ){
 				navigation.navigate('RootScreen');
@@ -174,7 +175,7 @@ export default class Model{
 			let valid = this._validSessionOrKill(resp, navigation);
 			data = resp;
 			if((data.status == 200 || data.status == '200') || (data.status = '201' || data.status == 201)){
-				Alert.alert('Confirmacion', 'Los datos han sido guardados correctamente', [
+				Alert.alert('Confirmacion', 'Los datos han sido guardados correctamente ', [
 					{
 						text: 'Aceptar',
 						onPress: ()=>{ 
@@ -199,7 +200,6 @@ export default class Model{
 	}
 
 	async getAll(navigation = null){
-
 
 
 		let session = await AsyncStorage.getItem("@session");
@@ -230,16 +230,21 @@ export default class Model{
 		let session = await AsyncStorage.getItem("@session");
 		let token = await JSON.parse(session);
 		const con = new Connection();
-		
+		let url = con.getUrlApi(this._model)+'/'+this.data.id;
+
 		var req = await fetch(con.getUrlApi(this._model)+'/'+this.data.id, {
 			method,
 			headers:{
 				Accept: 'application/json',
-				Authorization: token.token
+				Authorization: token.token,
+				'Content-Type': 'application/json'
 			}
 		}).then( resp =>{
 			let valid = this._validSessionOrKill(resp, navigation);
-			Alert.alert('Accion realizada', 'La accion se ha realizado de manera correcta'); 
+			if(resp.status = 200 || resp.status == '200')
+				Alert.alert('Accion realizada', 'El usuario ha sido eliminado de manera correcta'); 
+			else
+				Alert.alert('Error', 'Ha ocurrido un error al intentar eliminar el usuario'); 
 		} );
 
 	}
@@ -253,7 +258,6 @@ export default class Model{
 		const con = new Connection();
 
 		let params = '{ "'+model+'" : '+JSON.stringify(this.data)+' }';
-
 		let req = await fetch(con.getUrlApi(this._model)+'/'+id, {
 			method: method,
 			headers: {
@@ -263,15 +267,16 @@ export default class Model{
 			body: params
 		}).then(resp => {
 			const { _bodyInit } = resp;
-			let valid = this._validSessionOrKill(resp, navigation);
+			//Alert.alert('UPDATE-MODEL', JSON.stringify(resp));
+			//let valid = this._validSessionOrKill(resp, navigation);
 
 			if(resp.status == '200' || resp.status == 200 || resp.status == '201' || resp.status == 201){
 				Alert.alert('Correcto', 'Los datos han sido actualizados correctamente', [
 					{
 						text: 'Aceptar',
 						onPress:()=>{ 
-							navigation.state.params.onUpdate(resp._bodyInit);
-							navigation.goBack();
+							//navigation.state.params.onUpdate(resp._bodyInit);
+							//navigation.goBack();
 						}
 					}
 				]);
@@ -299,8 +304,6 @@ export default class Model{
 				Authorization: token.token
 			}
 		}).then( (resp)=>{
-			model = new Model;
-			let valid = model._validSessionOrKill(resp, navigation);
 			return resp._bodyInit;
 		});
 

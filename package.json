@@ -28,6 +28,7 @@
     	"react-native-svg": "^5.2.0",
 		"redux": "^3.7.2",
 	    "assign-deep": "^0.4.5",
+    	"react-native-modal-datetime-picker": "^4.13.0",
 	    "react-native-swiper": "git+https://github.com/FuYaoDe/react-native-swiper.git"
 	},
 	"devDependencies": {

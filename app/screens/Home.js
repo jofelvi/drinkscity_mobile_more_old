@@ -31,12 +31,6 @@ export default class Home extends Component {
 		}
 	}
 
-	componentDidMount(){
-		BackHandler.addEventListener('hardwareBackPress', ()=>{
-			BackHandler.exitApp()
-		});
-	}
-
 	async componentWillMount(){
 		let session = await AsyncStorage.getItem('@session');
 		session = await JSON.parse(session);
@@ -46,8 +40,9 @@ export default class Home extends Component {
 		});
 	}
 
-	componentWillUnmount(){
-		BackHandler.removeEventListener('hardwareBackPress', ()=> false);
+	componentDidMount(){
+		BackHandler.removeEventListener('hardwareBackPress', ()=> true);
+		BackHandler.addEventListener('hardwareBackPress', ()=> this.props.navigation.goBack());
 	}
 
 
@@ -60,7 +55,7 @@ export default class Home extends Component {
 					try{
 						AsyncStorage.removeItem("@session")
 						.then( ()=>{
-							BackHandler.exitApp()
+							this.props.navigation.navigate('RootScreen')
 						} );
 					}catch( err ){
 						console.log(err)
@@ -80,7 +75,7 @@ export default class Home extends Component {
 			<View style={styles.container}>
 				<StatusBar translucent={true} backgroundColor={'#000000'}/>
 				<MainHeader {...this.props} />
-				<Content style={{marginTop: -23, flex: 1}}>
+				<Content style={{ flex: 1}}>
 					<Botonera  {...this.props} />
 				</Content>
 					<View style={{ alignSelf: "center",alignContent: "center", alignItems: "center", flex: 0.1, left: 0, right: 0 ,position: "relative", bottom: 0, flexDirection: 'row', alignItems: "center" ,marginBottom : 0}}>

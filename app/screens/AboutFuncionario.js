@@ -17,7 +17,8 @@ import {
 	Body,
 	Picker,
 	Col,
-	Row
+	Row,
+	Grid
 } from 'native-base';
 
 import {
@@ -25,7 +26,8 @@ import {
 	Dimensions,
 	TouchableOpacity,
 	Alert,
-	ScrollView
+	ScrollView,
+	AsyncStorage
 } from 'react-native';
 
 
@@ -41,7 +43,7 @@ export default class AboutFuncionario extends React.Component{
 	static navigationOptions = ({navigation}) => ({
 		title: `${navigation.state.params.titulo}`,
 		headerTintColor: "#ffffff",
-		headerStyle: { backgroundColor: "#02A6A4" },
+		headerStyle: { backgroundColor: "#01DAC9" },
 		headerLeft: null,
 		headerRight: <Button onPress={()=>{navigation.goBack()}} transparent><Text><FontAwesome style={{color:"#ffffff", fontSize: 22}}>{Icons.close}</FontAwesome></Text></Button> 
 	
@@ -54,7 +56,7 @@ export default class AboutFuncionario extends React.Component{
 		const { state } = navigation;
 		let func = ( state.params.funcionario != false ) 
 			? state.params.funcionario 
-			: {fullname: '', email: '', password: '', phone: '', role: 'guest', rut: '', address: ''};
+			: {fullname: '', email: '', password: '', phone: '', role: 'guest', rut: ''};
 		
 		this.state = {
 			funcionario: new Funcionario(func),
@@ -69,7 +71,6 @@ export default class AboutFuncionario extends React.Component{
 
 	async _saveUserToStore(){
 		const con = new Connection();
-
 		const body = '{"user":'+JSON.stringify(this.state.funcionario.getData())+'}';
 		let resp = fetch( con.getUrlApi('users'), {
 			method: 'POST',
@@ -111,6 +112,15 @@ export default class AboutFuncionario extends React.Component{
 		navigation.state.params.onBack(true);
 	}
 
+	async componentDidMount(){
+		let session = await AsyncStorage.getItem('@session');
+		let { store } = await JSON.parse(session);
+		this.setState({
+			store_id: this.state.funcionario.setAttribute('store_id', store.id)
+		});
+
+	}
+
 	_saveUser(){
 		Alert.alert(
 			'Confirme la accion',
@@ -119,7 +129,7 @@ export default class AboutFuncionario extends React.Component{
 				{
 					text: 'Aceptar',
 					onPress: ()=>{
-						let resp = this.state.funcionario.push();
+						let resp = this.state.funcionario.push(this.props.navigation);
 						this._accion("this.props.navigation.goBack()");
 					}
 				}
@@ -143,58 +153,79 @@ export default class AboutFuncionario extends React.Component{
 				<StatusBar translucent backgroundColor={'#02A6A4'} />
 				<ScrollView>
 					<Form>
-						<Item floatingLabel>
-							<Label 
-								style={{ color:  "#ffffff"}} >Nombre completo
-							</Label>
-							<Input 
-								value={this.state.fullname}
-								onChangeText={ text => { this.setState({ fullname: this.state.funcionario.setAttribute('fullname', text) }); } }
-								style={{ color:  "#ffffff"}} 
-							/>
-						</Item>
-						<Item floatingLabel>
-							<Label 
-								style={{ color:  "#ffffff"}} >RUT
-							</Label>
-							<Input 
-								value={this.state.rut}
-								onChangeText={ text => { this.setState({ rut: this.state.funcionario.setAttribute('rut', text) }); } }
-								style={{ color:  "#ffffff"}} 
-							/>
-						</Item>
-						<Item floatingLabel>
-							<Label 
-								style={{ color:  "#ffffff"}} >Correo Electronico
-							</Label>
-							<Input 
-								value={this.state.email}
-								onChangeText={ text => { this.setState({ email: this.state.funcionario.setAttribute('email', text) }); } }
-								style={{ color:  "#ffffff"}} 
-							/>
-						</Item>
-						<Item floatingLabel>
-							<Label 
-								style={{ color:  "#ffffff"}} >Asignar una clave
-							</Label>
-							<Input 
-								secureTextEntry={true}
-								value={this.state.password}
-								onChangeText={ text => { this.setState({ password: this.state.funcionario.setAttribute('password', text) }); } }
-								style={{ color:  "#ffffff"}} 
-							/>
-						</Item>
-						<Item floatingLabel>
-							<Label 
-								style={{ color:  "#ffffff"}} >Telefono
-							</Label>
-							<Input 
-								value={this.state.phone}
-								onChangeText={ text => { this.setState({ phone: this.state.funcionario.setAttribute('phone', text) }); } }
-								style={{ color:  "#ffffff"}} 
-							/>
-						</Item>
-						<Text style={{color :"#ffffff", fontSize: 18, marginLeft: 14.3}}>
+						<Grid>
+							<Row>
+								<Col style={{width: "95%"}} >
+									<Item floatingLabel>
+										<Label 
+											style={{ color:  "#ffffff"}} >Nombre completo
+										</Label>
+										<Input 
+											value={this.state.fullname}
+											onChangeText={ text => { this.setState({ fullname: this.state.funcionario.setAttribute('fullname', text) }); } }
+											style={{ color:  "#ffffff"}} 
+										/>
+									</Item>
+								</Col>
+							</Row>
+							<Row>
+								<Col style={{width: "95%"}} >
+									<Item floatingLabel>
+										<Label 
+											style={{ color:  "#ffffff"}} >RUT
+										</Label>
+										<Input 
+											value={this.state.rut}
+											onChangeText={ text => { this.setState({ rut: this.state.funcionario.setAttribute('rut', text) }); } }
+											style={{ color:  "#ffffff"}} 
+										/>
+									</Item>
+								</Col>
+							</Row>
+							<Row>
+								<Col style={{width: "95%"}} >
+									<Item floatingLabel>
+										<Label 
+											style={{ color:  "#ffffff"}} >Correo Electronico
+										</Label>
+										<Input 
+											value={this.state.email}
+											onChangeText={ text => { this.setState({ email: this.state.funcionario.setAttribute('email', text) }); } }
+											style={{ color:  "#ffffff"}} 
+										/>
+									</Item>
+								</Col>
+							</Row>
+							<Row>
+								<Col style={{width: "95%"}} >
+									<Item floatingLabel>
+										<Label 
+											style={{ color:  "#ffffff"}} >Asignar una clave
+										</Label>
+										<Input 
+											secureTextEntry={true}
+											value={this.state.password}
+											onChangeText={ text => { this.setState({ password: this.state.funcionario.setAttribute('password', text) }); } }
+											style={{ color:  "#ffffff"}} 
+										/>
+									</Item>
+								</Col>
+							</Row>
+							<Row>
+								<Col style={{width: "95%"}} >
+									<Item floatingLabel>
+										<Label 
+											style={{ color:  "#ffffff"}} >Telefono
+										</Label>
+										<Input 
+											value={this.state.phone}
+											onChangeText={ text => { this.setState({ phone: this.state.funcionario.setAttribute('phone', text) }); } }
+											style={{ color:  "#ffffff"}} 
+										/>
+									</Item>
+								</Col>
+							</Row>
+						<Text style={{color :"#ffffff", fontSize: 17, marginTop: 5, marginLeft: 14.3}}>
 							Tipo
 						</Text>
 						<Picker
@@ -210,10 +241,7 @@ export default class AboutFuncionario extends React.Component{
 							  	) : <Item key={1} style={{color: "#ffffff"}}  label={'Store admin'} value={'store_admin'} />
 							}
 						</Picker>
-						<Item floatingLabel>
-							<Label style={{ color:  "#ffffff" }}>Direccion</Label>
-							<Input  style={{ color:  "#ffffff" }} value={this.state.address} onChangeText={text=>{ this.setState({address: this.state.funcionario.setAttribute('address', text) }); }} multiline={true} numberOfLines={4} />
-						</Item>
+						</Grid>
 					</Form>
 
 					<Button onPress={()=>{ 

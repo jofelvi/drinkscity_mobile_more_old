@@ -25,7 +25,9 @@ import {
 	StatusBar,
 	Image,
 	TouchableOpacity,
-	AsyncStorage
+	AsyncStorage,
+	ScrollView,
+	TouchableHighlight
 } from 'react-native';
 
 import Product from '../classes/Product'
@@ -38,12 +40,23 @@ import { PopMenu } from '../components/PopupMenu'
 const moment = require('moment')
 import BackHandler from 'BackHandler';
 
+Number.prototype.formatMoney = function(c, d, t){
+var n = this, 
+    c = isNaN(c = Math.abs(c)) ? 2 : c, 
+    d = d == undefined ? "." : d, 
+    t = t == undefined ? "," : t, 
+    s = n < 0 ? "-" : "", 
+    i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(c))), 
+    j = (j = i.length) > 3 ? j % 3 : 0;
+   return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+ };
+
 export default class Productos extends React.Component{
 
 	static navigationOptions = {
-		title: 'Mis productos',
+		title: 'MIS PRODUCTOS',
 		headerTintColor: "#ffffff",
-		headerStyle: { backgroundColor: "#02A6A4" }
+		headerStyle: { backgroundColor: "#01DAC9" }
 	}
 
 	constructor(props){
@@ -51,33 +64,53 @@ export default class Productos extends React.Component{
 		this.state = {
 			products: []
 		};
-
-		store.subscribe(()=>{
-			this.setState({
-				...store.getState()
-			});
-		});
 	}
 
 	async componentWillMount(){
-		let instance = new Product;
-		let session = await AsyncStorage.getItem('@session');
-		session = await JSON.parse(session);
-		const { token, user } = session;
-
-		instance.getAll(user.id, token);
 		BackHandler.removeEventListener('hardwareBackPress', ()=> true);
 		BackHandler.addEventListener('hardwareBackPress', ()=> this.props.navigation.goBack());
+	}
+
+	async componentDidMount(){
+		let session = await AsyncStorage.getItem('@session');
+		let { user, store, token } = JSON.parse(session);
+		const con = new Connection();
+
+		let resp = fetch( con.getUrlApi('stores/'+store.id), {
+			method: 'GET',
+			headers: {
+				'Accept': 'json',
+				Authorization: token.token
+			}
+		} ).then( resp =>{
+			if(resp.status == 200 || resp.status == '200'){
+				let _bodyInit = JSON.parse(resp._bodyInit);
+				if(_bodyInit.products.length == 0){
+					this.setState({
+						products: null
+					})
+				}
+				else{
+					this.setState({
+						products: _bodyInit.products
+					})
+				}
+				
+			}
+		});
 	}
 
 	_loadUrlImageResource(toLoad){
 		const con = new Connection();
 
 		var url ='';
-		if( Array.isArray(toLoad.images.self) && toLoad.images.self.length > 0 ){
-			url = con.getProtocol()+'//'+con.getOnlyUrl()+toLoad.images.self[0].cover_url;
-			
+		if( toLoad.images !== undefined ){
+			if( Array.isArray(toLoad.images.self) && toLoad.images.self.length > 0 ){
+				url = con.getProtocol()+'//'+con.getOnlyUrl()+toLoad.images.self[0].cover_url;
+				
+			}
 		}
+		else url = con.getProtocol()+'//'+con.getOnlyUrl()+toLoad.image;
 		return url;
 	}
 
@@ -94,7 +127,8 @@ export default class Productos extends React.Component{
 	}
 
 	_onUpdatePress = (producto) =>{
-		this.props.navigation.navigate('Estandar', {producto: new Product(producto), titulo: 'Editar producto', priority: producto.priority })
+		//Alert.alert('DEBUG-PRODUCTOS',JSON.stringify(producto));
+		this.props.navigation.navigate('Estandar', {from: 'Productos' ,producto: new Product(producto), titulo: 'Editar producto', priority: producto.priority })
 	}
 
 	_onDelete = (dato) =>{
@@ -109,7 +143,7 @@ export default class Productos extends React.Component{
 		
 		del = ( dato instanceof Product ) ? dato : new Product(dato);
 		del.delete();
-
+		return true;
 	}
 
 
@@ -118,74 +152,45 @@ export default class Productos extends React.Component{
 		dato = ( dato instanceof Product ) ? dato : new Product(dato);
 		let day = moment(dato.data.created_at).format('DD-MM-YYYY');
 		return(
+			<TouchableHighlight onPress={()=>{ this.props.navigation.navigate('PorProducto', { product: dato.data, onDelete: this._onDelete }) }}>
 			<Col style={{width: "100%"}}>
-				<Card>
-					<CardItem>
-						<Body>
-							<H3 style={{fontWeight: 'bold'}}>
-								{ dato.data.name }
-							</H3>
-							<Text note>
-								{' \n'}
-								<FontAwesome>{Icons.calendar}</FontAwesome> {day}
-							</Text>
-						</Body>
-							<Right>
-								<PopMenu onDelete={this._onDelete} model={'products'} onUpdatePress={this._onUpdatePress} onUpdate={this._onUpdate}  navigation={this.props.navigation} evento={dato.data} />
-							</Right>
-					</CardItem>
+				<Card style={{flex: 0}}>
 					<CardItem cardBody>
-							<Image
-								source={{uri: this._loadUrlImageResource(dato.data)}}
-								style={{ height: 200, width: "100%", flex: 1 }}
-								/>
-
-							<View
-								style={{
-									position: "absolute",
-									top: 130,
-									bottom: 0,
-									backgroundColor: "#10181B",
-									width: 220,
-									paddingLeft: 9,
-									paddingTop: 3
-								}}
-							>
-							<Text style={{color: "#ffffff", fontWeight: 'bold', marginLeft: 3}} >
-								{dato.data.description}
-							</Text>
-							</View>
+						<Image
+							source={{uri:  this._loadUrlImageResource(dato.data)}}
+							style={{height: 300, width: "100%", flex: 0  }}
+						/>
 					</CardItem>
-					<CardItem>
-						<Left>
-							<Button transparent>
-								<Text style={{fontWeight: 'bold', fontSize: 15, color: "#02A6A4"}}>
-									$ {dato.data.price}
-								</Text>
-							</Button>
-						</Left>
-						<Body>
-							<Button transparent>
-								<Text>
-									<FontAwesome style={{fontSize: 20, color: "#02A6A4"}}>{Icons.bookmark}</FontAwesome>
-									<Text style={{fontWeight: 'bold', fontSize: 15, color: "#02A6A4"}}>{' '+dato.data.category}</Text>
-								</Text>
-							</Button>
-						</Body>
+					<CardItem footer>
+						<Col style={{ width: "100%", alignContent: "center", justifyContent: "center", alignSelf: "center" }}>
+							<Text selectable={true} style={{textAlign: "center", width: "100%", fontSize: 21, fontWeight: 'bold'}}>
+								{dato.data.name}
+							</Text>
+							<Text selectable={true} style={{textAlign: "center", width: "100%", fontSize: 15,}}>
+								$ {(new Number(dato.data.price)).formatMoney(2, '.', ',')} # {dato.data.stock}
+							</Text>
+						</Col>
+
 					</CardItem>
 				</Card>
 			</Col>
+			</TouchableHighlight>
 		);
 	}
 
 	_renderCards(){
 		let { products } = this.state;
-		if( products.length >0){
-			const cards = products.map( ( dato, i ) =>{
+		if( products !== null ){
+			if( products.length >0){
+				const cards = products.map( ( dato, i ) =>{
 
-				return <Row>{this._renderCol( dato )}</Row>
-			});
-			return cards;
+					return this._renderCol( dato )
+				});
+				return cards;
+			}
+		}
+		else if(products == null){
+			Alert.alert('Advertencia', 'No se han encontrado productos relacionados a esta tienda');
 		}
 		else{
 			const cards2 = <Spinner color={'#02A6A4'} />

@@ -18,23 +18,19 @@ String.prototype.capitalize = function(){
 	return this.charAt(0).toUpperCase()+this.slice(1);
 };
 
-export default class Funcionario extends Model{
+export default class Ticket extends Model{
 
-	constructor( data = false){
-		super('users', data);
+	constructor( data = {'name': '', 'price': 0.00, 'stock': 0}){
+		super('events/tickets_attributes', data);
 
 		/**
 		 * MODELO DE LA TABLA DE PRODUCTOS ALOJADA EN EL SERVIDOR
 		 * @type {Array}
 		 */
 		this.fillable = [
-			'fullname', 
-			'email',
-			'password',
-			'phone',
-			'role',
-			'rut',
-			'store_id'
+			'name', 
+			'price',
+			'stock'
 		];
 
 		/**
@@ -45,43 +41,29 @@ export default class Funcionario extends Model{
 		 * @type {Object}
 		 */
 		this.data_type = {
-			fullname : { type: 'string', required: true, alias: "Nombre" }, 
-			email : {type: 'string', required: true, alias: 'Correo electronico'},
-			password: {type: 'string', required: true, alias: 'Clave'},
-			phone : {type: 'string', required: true, alias: 'Numero telefonico'},
-			type : {type: 'integer', required: true, alias: 'tipo'},
-			rut: {type: 'string', required: true, alias: 'Rut'},
-			role: {type: 'string', required: true, alias: 'Rol'},
-			store_id: {type: 'integer', required: true, alias: 'Tienda'}
+			name : { type: 'string', required: true, alias: "Titulo del evento" }, 
+			price: { type: 'float', required: true, alias: 'Precio de la entrada' },
+			stock: { type: 'integer', required: true, alias: 'Disponibilidad' }
+		
 		}
-
-		this.roles = [
-			{name: 'admin', description: 'Administrador'},
-			{name: 'store_admin', description: 'Store Admin'},
-			{name: 'validator', description: 'Validador'},
-			{name: 'rrpp', description: 'RRPP'},
-			{name: 'customer', description:'Customer'},
-			{name: 'guest', description:'Visitante'}
-		];
 	}
 
 	/**
 	 * METODO PARA VALIDAR Y ENVIAR LOS DATOS AL SERVIDOR
 	 * @return boolean RETORNA FALSO SI HA OCURRIDO ALGUN ERROR
 	 */
-	push(navigation = null){
+	push(navigation = null, meth = 'POST'){
 
 		// SE CALCULA LA LONGITUD DEL ARREGLO DE CAMPOS DE LA TABLA Y SE 
 		// RECORRE EN UN FOR PARA VALIDARLOS
 		let data = this.fillable.length;
-
 		for (var i = 0; i < data; i++) {
 
 			//	USANDO LA POSICION DEL STRING DE CADA UNO DE LOS CAMPOS DE LA TABLA
 			//	ALMACENADOS EN EL ARRAY FILLABLE Y SE USA PARA VALIDAR EL CAMPO
 			//	EN EL OBJETO DATA
-			if(this.data[ this.fillable[i] ] == '' && this.data_type[ this.fillable[i] ].required ){
-				Alert.alert('Error', 'Debe completar todos los campos presentes en el formulario');
+			if((this.data[ this.fillable[i] ] == '' && this.fillable[i] != 'priority') && this.data_type[ this.fillable[i] ].required ){
+				Alert.alert('Error', '[ '+this.fillable[i]+'] Debe completar todos los campos presentes en el formulario ->'+JSON.stringify(this.data));
 				return false;
 			}else{
 				let type = this.data_type[ this.fillable[i] ].type
@@ -91,15 +73,17 @@ export default class Funcionario extends Model{
 				}
 			}
 		}
-
-		super.push('user','POST', navigation);
+		let resp = super.push('event', meth, navigation);
 	}
+	getVideoId(){
 
-	getFillables(){
-		return this.fillable;
-	}
+		if(this.video_link == null || this.video_link == ''){
+			return false;
+		}
+		let id = ( this.data.video_link.search('watch?v=')  != -1) 
+			? this.data.video_link.split('watch?v=')
+			: this.data.video_link.split('/'); 
 
-	getRoles(){
-		return this.roles;
+		return Array.isArray(id) ? id[1] : false;
 	}
 }

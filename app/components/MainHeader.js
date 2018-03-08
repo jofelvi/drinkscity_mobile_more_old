@@ -14,10 +14,11 @@ import {
 	Dimensions,
 	TouchableOpacity,
 	AsyncStorage,
-	Alert
+	Alert,
+	TouchableHighlight
 } from 'react-native'
-
-
+import Connection from '../config/connection';
+import Model from '../classes/Model';
 export default class MainHeader extends React.Component{
 
 	constructor(props){
@@ -36,13 +37,18 @@ export default class MainHeader extends React.Component{
 		let session = await AsyncStorage.getItem('@session');
 		let {user, store} = await JSON.parse(session);
 
-
+		let resp = Model.getWithId('stores', store.id);
+		resp = await resp;
+		resp = ( typeof(resp) == 'string' ) ? JSON.parse(resp) : resp;
+		store = resp;
 		this.setState({
 			store,
 			user:{
 				...user
 			}
 		});
+
+		//Alert.alert('DEBUG', JSON.stringify(this.state))
 
 	}
 
@@ -51,15 +57,39 @@ export default class MainHeader extends React.Component{
 		const { navigation } = this.props
 		let { user } = this.state;
 		let { store } = this.state;
+		var logo = require('../assets/img/logo_2.jpg')
+		var portada = require('../assets/img/dc.jpg')
+		if(store !== null){
+			const con = new Connection();
+			logo =  { uri: con.getProtocol()+'//'+con.getOnlyUrl()+store.logo };
+			let url = ( typeof(logo) == 'string' ) ? logo : JSON.stringify(logo);
+		//	Alert.alert('DEBUG', JSON.stringify(store))
+			if(store.images){
+				let { images } = store;
+				if(images.self.length > 0){
+					let imgSrc = ( (store.images.self.length - 1) < 0 ) ? store.images.self[0] : store.images.self[ (store.images.self.length - 1) ];
+					let url = con.getProtocol()+'//'+con.getOnlyUrl()+'/'+imgSrc.cover_url;
+					
+					portada = { uri: url };
+					//Alert.alert('URL', JSON.stringify(portada));
+				}
+			}
+		}
 		return(
 			<View style={styles.header}>
+				<TouchableHighlight 
+					onPress={()=>{ navigation.navigate('portada') }}
+					style={{width:width, height: 130}}
+				>
 				<Image 
-					source={require('../assets/img/dc.jpg')} 
+					source={portada} 
 					style={{
 						maxHeight: 130,
-						maxWidth:  width
+						maxWidth:  width,
+						flex: 1
 					}}
 				/>
+				</TouchableHighlight>
 				<TouchableOpacity 
 					style={styles.imgLogo}  
 					onPress={ ()=>{ navigation.navigate('PerfilScreen') } }
@@ -68,11 +98,11 @@ export default class MainHeader extends React.Component{
 						style={{
 							width: 85,
 							height: 85,
-							borderColor: "#02A6A4",
+							borderColor: "#01DAC9",
 							borderWidth: 2.3
 						}}
 						square 
-						source={require('../assets/img/logo_2.jpg')} 
+						source={logo} 
 					/>
 				</TouchableOpacity>
 				<View style={styles.logo}>

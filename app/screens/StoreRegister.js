@@ -68,7 +68,7 @@ export default class StoreRegister extends React.Component{
 	static navigationOptions = {
 		title: 'Registro de tienda',
 		headerTintColor: "#ffffff",
-		headerStyle: { backgroundColor: "#02A6A4" }
+		headerStyle: { backgroundColor: "#01DAC9" }
 	}
 
 
@@ -78,8 +78,10 @@ export default class StoreRegister extends React.Component{
 		const { user } = this.props.navigation.state.params;
 
 		this.state = {
-			img: {uri: ''},
-			img_name: '',
+			logo: '',
+			images: [],
+			portada_name: '',
+			perfil_name: '',
 			statusBarColor: "#02A6A4",
 			statusBarStyle: 'default',
 			currentRegion: {
@@ -106,7 +108,9 @@ export default class StoreRegister extends React.Component{
 			legal_agent: '',
 			legal_agent_rut: '',
 			legal_agent_phone: '',
-			legal_agent_email: ''
+			legal_agent_email: '',
+			user_id: user.id,
+			salvar: false
 		}
 		navigator.geolocation.getCurrentPosition(
 		    (position) => {
@@ -136,7 +140,14 @@ export default class StoreRegister extends React.Component{
 	async salvar(){
 		const con =new Connection();
 		const model = new Model;
-		const data = '{ "store" : '+JSON.stringify(this.state)+' }';
+
+		if(this.state.images.length == 0){
+			delete this.state.images;
+		}
+		if(this.state.logo == ''){
+			delete this.state.logo;
+		}
+		const body = '{ "store" : '+JSON.stringify(this.state)+' }';
 
 		resp = await fetch( con.getUrlApi('stores'), {
 			method: 'POST',
@@ -144,8 +155,18 @@ export default class StoreRegister extends React.Component{
 				'Content-Type': 'application/json',
 				Accept: 'json'
 			},
-			body: data
+			body
 		}).then( data =>{
+			this.setState({ salvar: false });
+			if(data.status == '200' || data.status == 200 || data.status == '201' || data.status == 201){
+
+				Alert.alert('Proceso correcto', 'El proceso se ha realizado de manera correcta', [
+					{
+						text: 'Aceptar',
+						onPress: ()=> { this.props.navigation.goBack(); }
+					}
+				]);
+			}
 		} );
 	}
 
@@ -207,10 +228,17 @@ export default class StoreRegister extends React.Component{
 			let img = null;
 			img = crop.cropping(response.path, 300, 400);
 			setTimeout(()=>{
-				this.setState({
-					img: { uri: img._55.data },
-					img_name: response.fileName
-				})
+				//'data:image/jpeg;base64,'+img._55.data
+				this.setState(prevState=>{
+					let imagen = 'data:image/jpeg;base64,'+img._55.data;
+					if(this.state.img_kind == 1){
+						prevState.logo = imagen;
+					}
+					else{
+						prevState.images.push(imagen);
+					}
+					return prevState;
+				});
 			}, 3000);
 		}
 	}
@@ -288,12 +316,12 @@ export default class StoreRegister extends React.Component{
 						<Form>
 							<Grid>
 								<Row>
-									<Col style={{width: "90%"}}>
+									<Col style={{width: "95%"}}>
 										<H2 style={{color: "#02A6A4", marginLeft: 14, marginTop: 4}} >Datos de la tienda</H2>
 									</Col>
 								</Row>
 								<Row>
-									<Col style={{width: "90%"}}>
+									<Col style={{width: "95%"}}>
 									<Item floatingLabel>
 										<Label style={{color: "#ffffff"}}>Nombre de la tienda</Label>
 										<Input  onChangeText={text => this.setState({ name: text }) } value={this.state.name} style={{color: "#ffffff"}} />
@@ -301,7 +329,7 @@ export default class StoreRegister extends React.Component{
 									</Col>
 								</Row>
 								<Row>
-									<Col style={{width: "90%"}}>
+									<Col style={{width: "95%"}}>
 									<Item floatingLabel>
 										<Label style={{color: "#ffffff"}}>Reseña de la tienda</Label>
 										<Input onChangeText={text=>{ this.setState({ description: text }) }} style={{color: "#ffffff"}} multiline numberOfLines={3} />
@@ -337,13 +365,13 @@ export default class StoreRegister extends React.Component{
 									</Col>
 								</Row>
 								<Row>
-									<Col style={{width: "45%"}}>
+									<Col style={{width: "47%"}}>
 									<Item floatingLabel>
 										<Label style={{color: "#ffffff"}}>Rut de la tienda</Label>
 										<Input onChangeText={ value => { this.setState({ rut: value }) } } style={{color: "#ffffff"}} />
 									</Item>
 									</Col>
-									<Col style={{width: "45%"}}>
+									<Col style={{width: "47%"}}>
 									<Item floatingLabel>
 										<Label style={{color: "#ffffff"}}>Telefono de la tienda</Label>
 										<Input onChangeText={text => { this.setState({ phone: text }) }} style={{color: "#ffffff"}} />
@@ -351,13 +379,13 @@ export default class StoreRegister extends React.Component{
 									</Col>
 								</Row>
 								<Row>
-									<Col style={{width: "45%"}}>
+									<Col style={{width: "47%"}}>
 									<Item floatingLabel>
 										<Label style={{color: "#ffffff"}}>Dias laborales</Label>
 										<Input onChangeText={ value => { this.setState({  days_opened : value }) } } style={{color: "#ffffff"}} />
 									</Item>
 									</Col>
-									<Col style={{width: "45%"}}>
+									<Col style={{width: "47%"}}>
 									<Item floatingLabel>
 										<Label style={{color: "#ffffff"}}>Horas de apertura</Label>
 										<Input onChangeText={text => { this.setState({ time_opened: text }) }} style={{color: "#ffffff"}} />
@@ -365,7 +393,7 @@ export default class StoreRegister extends React.Component{
 									</Col>
 								</Row>
 								<Row>
-									<Col style={{width: "90%"}}>
+									<Col style={{width: "95%"}}>
 									<Item floatingLabel>
 										<Label style={{color: "#ffffff"}}>Direccion de la tienda</Label>
 										<Input onChangeText={text=> { this.setState({ address: text }) }}  style={{color: "#ffffff"}} multiline numberOfLines={3} />
@@ -374,12 +402,12 @@ export default class StoreRegister extends React.Component{
 
 								</Row>
 								<Row>
-									<Col style={{width: "90%"}}>
+									<Col style={{width: "95%"}}>
 										<H2 style={{color: "#02A6A4", marginLeft: 14, marginTop: 4}} >Datos del representante</H2>
 									</Col>
 								</Row>
 								<Row>
-									<Col style={{width: "90%"}}>
+									<Col style={{width: "95%"}}>
 									<Item floatingLabel>
 										<Label style={{color: "#ffffff"}}>Representante legal de la tienda</Label>
 										<Input onChangeText={text=> { this.setState({ legal_agent: text }) } }  style={{color: "#ffffff"}} />
@@ -395,13 +423,13 @@ export default class StoreRegister extends React.Component{
 									</Col>
 								</Row>
 								<Row>
-									<Col style={{width: "45%"}}>
+									<Col style={{width: "47%"}}>
 									<Item floatingLabel>
 										<Label style={{color: "#ffffff"}}>Rut del representante</Label>
 										<Input  onChangeText={ text=>{ this.setState({ legal_agent_rut: text }) } } style={{color: "#ffffff"}} />
 									</Item>
 									</Col>
-									<Col style={{width: "45%"}}>
+									<Col style={{width: "47%"}}>
 									<Item floatingLabel>
 										<Label style={{color: "#ffffff"}}>Tlfno / rep.</Label>
 										<Input  onChangeText={ text=>{ this.setState({ legal_agent_phone: text }) } } style={{color: "#ffffff"}} />
@@ -412,20 +440,47 @@ export default class StoreRegister extends React.Component{
 									<Col style={{width: "27%", alignSelf: "center", alignItems: "flex-end", justifyContent: "flex-end"}}>
 										<Button 
 											onPress={()=>{
+												this.setState({
+													img_kind: 1
+												});
 												ImagePicker.showImagePicker(options, this._onImageSelect)
 											}}
 
 											rounded
 										>
 											<Text>
-												<FontAwesome style={{fontSize: 22}}>{Icons.cloudUpload}</FontAwesome>
+												Perfil
 											</Text>
 										</Button>
 									</Col>
 									<Col style={{width: "63%"}}>
 										<Item floatingLabel>
 											<Label style={{color:"#ffffff"}}>Imagen seleccionada</Label>
-											<Input style={{color:"#ffffff"}} disabled value={this.state.img_name} />
+											<Input style={{color:"#ffffff"}} disabled value={this.state.perfil_name} />
+										</Item>
+									</Col>
+								</Row>
+								<Row>
+									<Col style={{width: "27%", alignSelf: "center", alignItems: "flex-end", justifyContent: "flex-end"}}>
+										<Button 
+											onPress={()=>{
+												this.setState({
+													img_kind: 2
+												});
+												ImagePicker.showImagePicker(options, this._onImageSelect)
+											}}
+
+											rounded
+										>
+											<Text>
+												Portada
+											</Text>
+										</Button>
+									</Col>
+									<Col style={{width: "63%"}}>
+										<Item floatingLabel>
+											<Label style={{color:"#ffffff"}}>Imagen seleccionada</Label>
+											<Input style={{color:"#ffffff"}} disabled value={this.state.portada_name} />
 										</Item>
 									</Col>
 								</Row>
@@ -466,9 +521,14 @@ export default class StoreRegister extends React.Component{
 								</Row>	
 								<Row>
 									<Col style={{width: "100%"}}>
-										<Button onPress={()=>{ this.salvar() } } block style={{marginTop: 9, marginBottom:9, backgroundColor: "#02A6A4"}} >
+										<Button 
+											onPress={()=>{ this.setState({salvar:true}); this.salvar(); } } 
+											block 
+											style={{marginTop: 9, marginBottom:9, backgroundColor: "#02A6A4"}} 
+											disabled={this.state.salvar}
+										>
 											<Text> 
-												Terminar registro
+												{this.state.salvar ? 'Cargando...':'Terminar registro'}
 											</Text>
 										</Button>
 									</Col>

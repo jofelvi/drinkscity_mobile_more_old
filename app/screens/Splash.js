@@ -28,7 +28,7 @@ export default class Splash extends React.Component {
 			}
 
 			let con = new Connection();
-			let resp = fetch( con.getUrlApi('products'), {
+			let resp = fetch( con.getUrlApi('events'), {
 				method: 'GET',
 				headers: {
 					'Content-Type': 'application/json',

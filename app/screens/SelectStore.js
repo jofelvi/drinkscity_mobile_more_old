@@ -7,7 +7,10 @@ import {
 	Text,
 	Body,
 	View,
-	Right
+	Right,
+	Fab,
+	Row,
+	Col
 } from 'native-base';
 import {
 	TouchableOpacity,
@@ -25,7 +28,8 @@ export default class SelectStore extends Component{
 	constructor(props){
 		super(props);
 		this.state = {
-			stores: []
+			stores: [],
+			user: null
 		};
 		this.useStore.bind(this)
 	}
@@ -33,6 +37,9 @@ export default class SelectStore extends Component{
 	async getSucursales(){
 		let session = await AsyncStorage.getItem('@session');
 		const {token ,user} = await JSON.parse(session) || null;
+		this.setState({
+			user
+		});
 		let con = new Connection();
 		fetch(con.getUrlApi('users')+'/'+user.id, {
 			method: 'GET',
@@ -58,6 +65,7 @@ export default class SelectStore extends Component{
 					this.setState({
 						stores:_bodyInit.stores
 					});
+					//Alert.alert('BODY', JSON.stringify(this.state.stores));
 				}
 			}
 
@@ -84,7 +92,9 @@ export default class SelectStore extends Component{
 			return( 
 				<ListItem key={i} >
 					<Body>
+						<TouchableOpacity onPress={()=>{  this.useStore(store) }}>
 						<Text note style={{color: "#ffffff"}}>{store.name}</Text>
+						</TouchableOpacity>
 					</Body>
 					<Right>
 						<TouchableOpacity onPress={()=>{  this.useStore(store) }}>
@@ -111,7 +121,7 @@ export default class SelectStore extends Component{
 					try{
 						AsyncStorage.removeItem("@session")
 						.then( ()=>{
-							BackHandler.exitApp()
+							this.props.navigation.navigate('RootScreen');
 						} );
 					}catch( err ){
 						console.log(err)
@@ -131,10 +141,25 @@ export default class SelectStore extends Component{
 			<View style={styles.container}>
 				<StatusBar translucent={true} backgroundColor={'#000000'}/>
 				<Content>
-					<List>
-						{this.renderSucursales()}
-					</List>
+					<Row>
+						<Col style={{width: "95%"}}>
+							<List>
+								{this.renderSucursales()}
+							</List>
+						</Col>
+					</Row>
 				</Content>
+				<View style={{ flex: 1 }}>
+		          <Fab
+		            containerStyle={{ }}
+		            style={{ backgroundColor: '#02A6A4' }}
+		            position="bottomRight"
+		            onPress={() =>  this.props.navigation.navigate(`RegisterScreen`, { user: this.state.user }) }>
+		            <Text style={{color:"#ffffff", fontSize: 20}}>
+		            	<FontAwesome style={{color:"#ffffff", fontSize: 20}}>{Icons.plus}</FontAwesome>
+		            </Text>
+		          </Fab>
+		        </View>
 					<View style={{ alignSelf: "center",alignContent: "center", alignItems: "center", flex: 0.1, left: 0, right: 0 ,position: "relative", bottom: 0, flexDirection: 'row', alignItems: "center" ,marginBottom : 0}}>
 						<View style={{flex: 0.8, alignSelf: "center",alignContent: "center", alignItems: "center"}}>
 							<TouchableOpacity onPress={()=>{this.close()}}>

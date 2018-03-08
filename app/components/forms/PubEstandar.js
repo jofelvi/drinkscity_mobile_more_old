@@ -26,7 +26,8 @@ import {
 	Alert,
 	Image,
 	ScrollView,
-	AsyncStorage
+	AsyncStorage,
+	Keyboard
 } from 'react-native';
 import Publicacion from '../../classes/Publicacion';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -34,6 +35,7 @@ import Product from '../../classes/Product'
 import Cropper from '../../classes/Cropper';
 import Connection from '../../config/connection'
 var ImagePicker = require('react-native-image-picker');
+import DateTimePicker from 'react-native-modal-datetime-picker';
 
 const moment = require ('moment');
 
@@ -48,29 +50,42 @@ var options = {
 export default class PubEstandar extends React.Component{
 	constructor(props){
 		super(props);
+		var producto = null;
 
-		var producto = (this.props.producto) 
-						? this.props.producto 
-						: {images: new Array(), user_id: 2, store_id: '', priority: this.props.priority, stock: 0, name: '', category: 0, description: '', price: 0.00, start_datetime: moment(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD'), end_datetime: moment(new Date(), 'YYYY-MM-DD').format('YYYY-MM-DD') };
-		
-		producto.images = ( producto.images.self != undefined )? producto.images.self : producto.images;		
-		pub = new Product(producto);
+		if(this.props.from == 'Productos'){
+			producto = this.props.producto 
+			//Alert.alert('PRODUCTO-DEBUG', JSON.stringify(producto))
+			producto.start_datetime =  moment(producto.start_datetime, 'YYYY-MM-DD HH:MM:SS').format('YYYY-MM-DD HH:MM:SS')
+			producto.end_datetime =  moment(producto.end_datetime, 'YYYY-MM-DD HH:MM:SS').format('YYYY-MM-DD HH:MM:SS')
+			//Alert.alert('D-3', JSON.stringify(this.props.producto))
+		}
+		else{  
+			producto = {item_type: this.props.item_type ,image:'', user_id: new Number(0), item_id: '', priority: this.props.priority, stock: 0, name: '', category: 0, description: '', price: 0.00, start_datetime: moment(new Date(), 'YYYY-MM-DD HH:MM:SS').format('YYYY-MM-DD HH:MM:SS'), end_datetime: moment(new Date(), 'YYYY-MM-DD HH:MM:SS').format('YYYY-MM-DD HH:MM:SS') };
+		}
+		//Alert.alert('D', JSON.stringify(producto))
+		pub = ( producto instanceof Product ) ? producto : new Product(producto);
 		this.state = {
-			images: [],
+			image: '',
 			...producto,
 			stores: [],
+			...pub.data,
 			pub,
-			con: new Connection()
+			con: new Connection(),
+			showPicker: false,
+			from: '',
+			ref_startdatetime: null,
+			ref_enddatetime: null
 		};
-
 	}
 
 	async componentWillMount(){
 		let session = await AsyncStorage.getItem('@session');
 		session = await JSON.parse(session);
 		this.setState({
-			stores: session.stores
+			stores: session.stores,
+			user_id: this.state.pub.setAttribute('user_id', session.user.id)
 		});
+		//Alert.alert('DE2', ''+this.state.pub.getAttribute('user_id'))
 	}
 
 	async componentDidMount(){
@@ -78,8 +93,9 @@ export default class PubEstandar extends React.Component{
 		session = await JSON.parse(session);
 		let { store } = session;
 		this.setState({
-			store_id: this.state.pub.setAttribute('store_id', store.id)
+			item_id: this.state.pub.setAttribute('item_id', store.id)
 		});
+		
 	}
 
 	async takePhoto(){
@@ -109,15 +125,14 @@ export default class PubEstandar extends React.Component{
 				let b64Crop = crop.cropping(response.path, 600, 500);
 
 				setTimeout(()=>{
-						image[ (image.length) ] = 'data:image/jpeg;base64,' + b64Crop._55.data; 
-
+					let image = this.state.pub.setAttribute('image', 'data:image/jpeg;base64,'+b64Crop._55.data );
 						this.setState({
-							images: image
+							image
 						});
 				}, 3000)
 				 
 				
-				this.state.pub.setAttribute('images', this.state.images);
+				
 			}
 			
 		});
@@ -154,56 +169,71 @@ export default class PubEstandar extends React.Component{
 	}
 
 	_renderImages(){
-		let { images } = this.state;
-		let items = null;
-			items = images.map( (data, i)=>{
+		let { image } = this.state;
 
-				return (
-					<Col>
-						<View style={{flex: 1, width: 150, height: 150, marginTop: 10, marginBottom: 3}}>
-							<Thumbnail 
-								square  
-								style={{
-									width: 150,
-									height: 160
+		if( image.length > 0 )
+		{
+			let arr = image.split('base64');
+			return (
+				<Col style={{width: "95%"}}>
+					<View style={{flex: 1, width: "100%", alignContent: "center", alignSelf: "center" , height: 150, marginTop: 10, marginBottom: 3}}>
+						<Thumbnail 
+							square  
+							style={{
+								width: "100%",
+								height: 160
+							}}
+							source={{uri: (arr.length > 1)? image :this.state.con.getProtocol()+'//'+this.state.con.getOnlyUrl() +image }} 
+						/>
+						<View style={{flex:1, position: 'absolute', top: 0, right: 0}}>
+							<Button 
+								rounded 
+								danger 
+								style={{elevation: 3, position: "absolute", right: 3}}
+								onPress={()=>{
+									this.setState({ image: ''  });
+									this.state.pub.setAttribute('image', this.state.image);
+
 								}}
-								source={{uri: (data.cover_url != undefined ) ? this.state.con.getProtocol()+'//'+this.state.con.getOnlyUrl()+data.cover_url : data }} 
-							/>
-							<View style={{flex:1, position: 'absolute', top: 0, right: 0}}>
-								<Button 
-									rounded 
-									danger 
-									style={{elevation: 3, position: "absolute", right: 3}}
-									onPress={()=>{
-										let notDeletes = this.state.images.filter( (image, k) =>{
-											return k != i;
-										});
-										this.setState({ images: notDeletes  });
-										this.state.pub.setAttribute('images', this.state.images);
-
-									}}
-								>
-									<Text>
-										<FontAwesome style={{color: "#ffffff", fontSize: 15}}>{Icons.close}</FontAwesome>
-									</Text>
-								</Button>
-							</View>
-						</View>
-					</Col>
-				);
-			});
-		
-			return items;
-		
+							>
+							<Text>
+								<FontAwesome style={{color: "#ffffff", fontSize: 15}}>{Icons.close}</FontAwesome>
+							</Text>
+						</Button>
+					</View>
+				</View>
+			</Col>
+			);		
+		}
+		return null;
 	}
+	_hideDateTimePicker = () => this.setState({ showPicker: false });
 
+	_handleDatePicked = (date) => {
+		let dateParser = ( typeof(date) == 'object' ) ? date: JSON.parse(date);
+
+	   switch(this.state.from){
+	   		case 'start_datetime': {
+	   			this.setState({ start_datetime: this.state.pub.setAttribute('start_datetime', moment(date, 'YYYY-MM-DD HH:MM:SS').format('YYYY-MM-DD HH:MM:SS')) });
+	   			break;
+	   		}
+	   		case 'end_datetime':{
+	   			this.setState({ end_datetime: this.state.pub.setAttribute('end_datetime', moment(date, 'YYYY-MM-DD HH:MM:SS').format('YYYY-MM-DD HH:MM:SS')) })
+	   			
+	   			break;
+	   		}
+	   }
+
+
+	   this._hideDateTimePicker();
+	};
 	render(){
 		return(
 			<View>
 				<Content>
 					<Form>
 						<Grid>
-						<Row style={{marginLeft: 7}}>
+						<Row style={{marginLeft: 7, alignContent: "center", justifyContent: "center", alignSelf: "center"}}>
 							{this._renderImages()}
 						</Row>
 						<Row style={{marginLeft: 7}}>
@@ -240,20 +270,24 @@ export default class PubEstandar extends React.Component{
 								</Item>
 							</Col>
 						</Row>
-						<Picker
-							mode='dropdown'
-							onValueChange={value => { this.state.pub.setAttribute('category', value); this.setState({category: value}); }}
-							style={{ color: this.props.color }}
-							selectedValue={this.state.category}
-						>
-							<Item style={{color: this.props.color }} label='Licores' value={0} /> 
-							<Item style={{color: this.props.color }} label='Cervezas' value={1} />
-							<Item style={{color: this.props.color }} label='Vinos' value={2} />
-							<Item style={{color: this.props.color }} label='Tragos preparados' value={3} />
-							<Item style={{color: this.props.color }} label='Insumos' value={4} />
-							<Item style={{color: this.props.color }} label='Habitaciones' value={5} />
-							<Item style={{color: this.props.color }} label='Comida' value={1} />
-						</Picker>
+						<Row>
+							<Col style={{width: "95%", marginLeft: 10}} >
+								<Picker
+									mode='dropdown'
+									onValueChange={value => { this.state.pub.setAttribute('category', value); this.setState({category: value}); }}
+									style={{ color: this.props.color }}
+									selectedValue={this.state.category}
+								>
+									<Item style={{color: this.props.color }} label='Licores' value={0} /> 
+									<Item style={{color: this.props.color }} label='Cervezas' value={1} />
+									<Item style={{color: this.props.color }} label='Vinos' value={2} />
+									<Item style={{color: this.props.color }} label='Tragos preparados' value={3} />
+									<Item style={{color: this.props.color }} label='Insumos' value={4} />
+									<Item style={{color: this.props.color }} label='Habitaciones' value={5} />
+									<Item style={{color: this.props.color }} label='Comida' value={1} />
+								</Picker>
+							</Col>
+						</Row>
 						<Row>
 							<Col style={{width: "98%"}}>
 								<Item floatingLabel>
@@ -291,7 +325,9 @@ export default class PubEstandar extends React.Component{
 									<Input 
 										style={{ color: this.props.color }} 
 										onChangeText={ start_datetime =>{ this.setState({ start_datetime: this.state.pub.setAttribute('start_datetime', this._validFormDate(start_datetime)) }) }}  
-										value={moment(this.state.start_datetime, 'YYYY-MM-DD').format('YYYY-MM-DD')}
+										value={this.state.start_datetime}
+										onFocus={ event =>{ Keyboard.dismiss(); this.setState({ showPicker: true, from: 'start_datetime' }); } }
+										
 									/>
 								</Item>
 							</Col>
@@ -301,16 +337,35 @@ export default class PubEstandar extends React.Component{
 									<Input 
 										style={{ color: this.props.color }} 
 										onChangeText={ end_datetime =>{ this.setState({ end_datetime: this.state.pub.setAttribute('end_datetime', this._validFormDate(end_datetime)  ) }); }}  
-										value={ moment(this.state.end_datetime, 'YYYY-MM-DD').format('YYYY-MM-DD HH:MM:SS')}
+										value={this.state.end_datetime}
+										onFocus={ event =>{ Keyboard.dismiss(); this.setState({ showPicker: true, from: 'end_datetime' }); } }
+										
 									/>
+									
 								</Item>
 							</Col>
 						</Row>
+					      <View style={{ flex: 1 }}>
+					        <DateTimePicker
+					          isVisible={this.state.showPicker}
+					          onConfirm={this._handleDatePicked}
+					          onCancel={this._hideDateTimePicker}
+					          mode={'datetime'}
+					        />
+					      </View>
 					</Grid>
 					</Form>
 					</Content>
 
-					<Button onPress={()=>{ this.state.pub.push(this.props.navigation) }}  block style={{ backgroundColor: "#02A6A4", marginBottom: 52 }}>
+					<Button onPress={()=>{ 
+						if(this.props.from != 'Productos')
+							//Alert.alert('DEBUG', JSON.stringify(this.state.pub.data));
+							this.state.pub.push(this.props.navigation) 
+						else{
+							this.state.pub.update('PUT', 'product', this.state.id, this.props.navigation)
+						}
+					}}  
+					block style={{ backgroundColor: "#02A6A4", marginBottom: 52 }}>
 						<Text style={{color: this.props.color}}>PUBLICAR</Text>
 					</Button>
 				

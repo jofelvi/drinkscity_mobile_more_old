@@ -13,7 +13,8 @@ import {
 	Left,
 	Right,
 	CardItem,
-	Card
+	Card,
+	Col
 } from 'native-base';
 
  
@@ -24,7 +25,8 @@ import {
 	ScrollView,
 	WebView,
 	TouchableOpacity,
-	Image
+	Image,
+	AsyncStorage
 } from 'react-native';
 
 import YouTube from 'react-native-youtube'
@@ -39,9 +41,9 @@ import { store } from '../redux/store';
 export default class ListaEventos extends React.Component{
 
 	static navigationOptions = ({navigation}) => ({
-		title: `${navigation.state.params.titulo}`,
+		title: `MIS EVENTOS`,
 		headerTintColor: "#ffffff",
-		headerStyle: { backgroundColor: "#02A6A4" }
+		headerStyle: { backgroundColor: "#01DAC9" }
 	})
 
 	constructor(props){
@@ -62,6 +64,7 @@ export default class ListaEventos extends React.Component{
 			this.setState({
 				eventos: events
 			});
+			//Alert.alert('DE', JSON.stringify(this.state.eventos[5]))
 		});
 
 	}
@@ -101,8 +104,10 @@ export default class ListaEventos extends React.Component{
 		var url ='';
 		if( Array.isArray(toLoad.images.self) && toLoad.images.self.length > 0 ){
 			url = con.getProtocol()+'//'+con.getOnlyUrl()+toLoad.images.self[0].cover_url;
-			
+			//Alert.alert('URL', url);
 		}
+
+		//Alert.alert('DEBUG', toLoad.id+' -> '+url);
 		return url;
 	}
 
@@ -123,38 +128,36 @@ export default class ListaEventos extends React.Component{
 
 	_renderList(){
 		let con =new Connection();
+
 		const items = this.state.eventos.map( (data, i)=>{
 			return(
-					<Card>
-						<CardItem>
+					<Card style={{ width: "99%", borderColor: "#01DAC9", borderWidth: 1, backgroundColor: "#111111" }} >
+						<CardItem style={{backgroundColor: "#111111"}}>
 							<Left />
 							<Body />
 							<Right>
-								<PopMenu onDelete={this._onDelete}  model={'events'} onUpdatePress={this._onUpdateButtonPress} onUpdate={this._onUpdate}  navigation={this.props.navigation} evento={data} eventos={this.state.eventos} />
+								<PopMenu navigation={this.props.navigation} onDelete={this._onDelete}  model={'events'} onUpdatePress={this._onUpdateButtonPress} onUpdate={this._onUpdate}  navigation={this.props.navigation} evento={data} eventos={this.state.eventos} />
 							</Right>
 						</CardItem>
-						<CardItem cardBody>
+						<CardItem cardBody style={{backgroundColor: "#111111"}}>
 							<Image 
 								source={{uri: this._loadUrlImageResource(data.data) }}
+								style={{
+									width: "100%",
+									height: 220,
+									flex: 1
+								}}
 							/>
 						</CardItem>
-						<CardItem>
-							<Left>
-								<Button transparent>
-									<Text style={{color: "#02A6A4"}}>
-										{data.data.name}
-									</Text>
-								</Button>
-							</Left>
-							<Body>
-								<Button transparent>
-									<Text style={{color: "#02A6A4"}}>
-										<FontAwesome style={{color: "#02A6A4", fontSize: 16}}>
-											{Icons.bookmark}
-										</FontAwesome> {data.data.category}
-									</Text>
-								</Button>
-							</Body>
+						<CardItem style={{backgroundColor: "#111111"}}>
+							<Col>
+								<Text selectable={true} style={{color: "#ffffff",textAlign: "center", width: "100%", fontSize: 17,}}>
+									{data.data.name}
+								</Text>
+								<Text selectable={true} style={{color: "#ffffff",textAlign: "center", width: "100%", fontSize: 17,}}>
+									{data.data.category}
+								</Text>							
+							</Col>
 						</CardItem>
 					</Card>
 			);

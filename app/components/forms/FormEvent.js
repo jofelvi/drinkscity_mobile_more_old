@@ -24,13 +24,16 @@ import {
 	StatusBar,
 	StyleSheet,
 	AsyncStorage,
-	PermissionsAndroid
+	PermissionsAndroid,
+	Keyboard
 } from 'react-native'
 import MapView, { Marker } from 'react-native-maps';
 
 import Event from '../../classes/Event';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import Modal from "react-native-modal";
+import DateTimePicker from 'react-native-modal-datetime-picker';
+import Cropper from '../../classes/Cropper';
 
 const moment = require('moment');
 
@@ -49,7 +52,7 @@ export default class FormEvent extends React.Component{
 	static navigationOptions = {
 		title: 'Crear evento',
 		headerTintColor: "#ffffff",
-		headerStyle: { backgroundColor: "#02A6A4" }
+		headerStyle: { backgroundColor: "#01DAC9" }
 	}
 
 
@@ -90,7 +93,8 @@ export default class FormEvent extends React.Component{
 				longitudeDelta: 0.0121,
 			},
 			markers: [],
-			stores: []
+			stores: [],
+			images: []
 		}
 		this.componentWillMount()
 
@@ -108,6 +112,75 @@ export default class FormEvent extends React.Component{
 	      latitudeDelta: Math.max(0, latDelta),
 	      longitudeDelta: Math.max(0, lonDelta),
 	    };
+	}
+
+	_renderButton(){
+		return (
+			<Col>
+				<TouchableOpacity 
+								
+					style={{
+						backgroundColor: "#02A6A4",
+						width: 170,
+						alingSelf: "center",
+						alignContent: "center",
+						marginTop: 9
+						}}
+				>
+					<FontAwesome style={{color: "#ffffff", fontSize: 52, textAlign: "center"}}>{Icons.camera}</FontAwesome>
+								
+				</TouchableOpacity>
+			</Col>
+		)
+	}
+
+
+	async takePhoto(){
+		ImagePicker.showImagePicker(options, (response) => {
+			console.log('Response = ', response);
+
+			if (response.didCancel) {
+				console.log('User cancelled image picker');
+			}
+			else if (response.error) {
+				console.log('ImagePicker Error: ', response.error);
+			}
+			else if (response.customButton) {
+				console.log('User tapped custom button: ', response.customButton);
+			}
+			else {
+				let source = { uri: response.uri };
+				let format = {
+					filename: response.fileName,
+					content: response.data,
+					content_type: 'image/jpeg'
+				};
+				let image = this.state.images;
+				const crop = new Cropper();
+				//image[ (image.length) ] = 'data:image/jpeg;base64,' +  response.data
+
+				let b64Crop = crop.cropping(response.path, 1300, 420);
+
+				setTimeout(()=>{
+						image[ (image.length) ] = 'data:image/jpeg;base64,' + b64Crop._55.data; 
+
+						this.setState({
+							images: image
+						});
+				}, 3000)
+				 this.state.event.setAttribute('images', this.state.images);
+			}
+			
+		});
+	}
+
+	async componentDidMount(){
+		let session = await AsyncStorage.getItem('@session');
+		session = await JSON.parse(session);
+		let { store } = session;
+		this.setState({
+			store_id: this.state.event.setAttribute('store_id', store.id)
+		});
 	}
 
 	async componentWillMount(){
@@ -239,49 +312,130 @@ export default class FormEvent extends React.Component{
 		}
 
 	}
+	_hideDateTimePicker = () => this.setState({ showPicker: false });
 
+	_handleDatePicked = (date) => {
+		let dateParser = ( typeof(date) == 'object' ) ? date: JSON.parse(date);
+	   switch(this.state.from){
+	   		case 'start_datetime': {
+	   			this.setState({ start_datetime:this.state.event.setAttribute('start_datetime', moment(date, 'YYYY-MM-DD HH:MM:SS').format('YYYY-MM-DD HH:MM:SS')) });
+	   			break;
+	   		}
+	   		case 'end_datetime':{
+	   			this.setState({ end_datetime: this.state.event.setAttribute('end_datetime', moment(date, 'YYYY-MM-DD HH:MM:SS').format('YYYY-MM-DD HH:MM:SS')) })
+	   			break;
+	   		}
+	   }
+	   this._hideDateTimePicker();
+	};
+
+	_renderImages(){
+		let { images } = this.state;
+		let items = null;
+			items = images.map( (data, i)=>{
+
+				return (
+					<Col>
+						<View style={{flex: 1, width: 150, height: 150, marginTop: 10, marginBottom: 3}}>
+							<Thumbnail 
+								square  
+								style={{
+									width: 150,
+									height: 160
+								}}
+								source={{uri: (data.cover_url != undefined ) ? this.state.con.getProtocol()+'//'+this.state.con.getOnlyUrl()+data.cover_url : data }} 
+							/>
+							<View style={{flex:1, position: 'absolute', top: 0, right: 0}}>
+								<Button 
+									rounded 
+									danger 
+									style={{elevation: 3, position: "absolute", right: 3}}
+									onPress={()=>{
+										let notDeletes = this.state.images.filter( (image, k) =>{
+											return k != i;
+										});
+										this.setState({ images: notDeletes  });
+										this.state.pub.setAttribute('images', this.state.images);
+
+									}}
+								>
+									<Text>
+										<FontAwesome style={{color: "#ffffff", fontSize: 15}}>{Icons.close}</FontAwesome>
+									</Text>
+								</Button>
+							</View>
+						</View>
+					</Col>
+				);
+			});
+		
+			return items;
+		
+	}
 	render(){
 
 		return(
 			<View style={styles.container}>
 				<StatusBar backgroundColor={this.state.statusBarColor} />
 				<ScrollView>
+					<Content>
 					<Form>
-						<Item floatingLabel>
-							<Label 
-								style={{ color: "#ffffff" }} >Titulo del aviso
-							</Label>
-							<Input 
-								style={{ color: "#ffffff" }} 
-								onChangeText={ text =>{this.state.event.setAttribute('name',text); this.setState({name: text}) }} 
-								value={this.state.name} 
-							/>
-						</Item>
-						<Picker
-							mode='dropdown'
-							onValueChange={value => { this.state.event.setAttribute('category', value); this.setState({category: value}); }}
-							style={{ color: "#ffffff" }}
-							selectedValue={this.state.category}
-						>
-							<Item style={{color: "#ffffff" }} label="Categoria" value={''} />
-							<Item style={{color: "#ffffff" }} label="Electronica" value={"electronica"} />
-							<Item style={{color: "#ffffff" }} label='Evento cultural' value={'evento_cultural'} />
-							<Item style={{color: "#ffffff" }} label='Otros' value={'otros'} /> 
-						</Picker>
-						<Picker
-							mode='dropdown'
-							onValueChange={value => { this.state.event.setAttribute('store_id', value); this.setState({store_id: value}); }}
-							style={{ color: this.props.color }}
-							selectedValue={this.state.store_id}
-							style={{color:"#ffffff"}}
-						>
-							<Item style={{color: "#ffffff" }} label="Seleccione una tienda" value={''} />
-							{ this.state.stores.map( (data, i) => <Item style={{color: "#ffffff" }} label={data.name} key={i} value={data.id} /> ) }
-						</Picker>
+						<Grid>
+						<Row style={{marginLeft: 7}}>
+							{this._renderImages()}
+						</Row>
+						<Row style={{marginLeft: 7}}>
+
+							<Col>
+								<TouchableOpacity 
+									onPress={()=>{
+										this.takePhoto()
+									}}
+									style={{
+										backgroundColor: "#02A6A4",
+										width: "97%",
+										alignSelf: "center",
+										alignContent: "center",
+										marginTop: 9
+									}}
+								>
+									<FontAwesome style={{color: "#ffffff", fontSize: 52, textAlign: "center"}}>{Icons.pictureO}</FontAwesome>
+									
+								</TouchableOpacity>
+							</Col>
+						</Row>
+						<Row>
+							<Col style={{width: "95%"}}>
+								<Item floatingLabel>
+									<Label 
+										style={{ color: "#ffffff" }} >Titulo del evento
+									</Label>
+									<Input 
+										style={{ color: "#ffffff" }} 
+										onChangeText={ text =>{this.state.event.setAttribute('name',text); this.setState({name: text}) }} 
+										value={this.state.name} 
+									/>
+								</Item>
+							</Col>
+						</Row>
+						<Row>
+							<Col style={{width: "95%", marginLeft: "2%"}}>
+								<Picker
+									mode='dropdown'
+									onValueChange={value => { this.state.event.setAttribute('category', value); this.setState({category: value}); }}
+									style={{ color: "#ffffff" }}
+									selectedValue={this.state.category}
+								>
+									<Item style={{color: "#ffffff" }} label="Categoria" value={''} />
+									<Item style={{color: "#ffffff" }} label="Electronica" value={"electronica"} />
+									<Item style={{color: "#ffffff" }} label='Evento cultural' value={'evento_cultural'} />
+									<Item style={{color: "#ffffff" }} label='Otros' value={'otros'} /> 
+								</Picker>
+							</Col>
+						</Row>
 						<Grid>
 							<Row>
-								<Col style={{width: "16%", marginTop: "11%", marginRight: 0}}>
-									<Item>
+								<Col style={{width: "18%", marginTop: "11%", marginRight: 0}}>
 										<TouchableOpacity 
 											onPress={()=>{ 
 												this.setState({togleModal: !this.state.togleModal }) ;
@@ -289,9 +443,14 @@ export default class FormEvent extends React.Component{
 													statusBarColor: "#000000", 
 												});
 											}}
+											style={{
+												alignSelf: "center",
+												alignItems: "center",
+												justifyContent: "center",
+												marginTop: "13%"
+											}}
 										>
 											<Text>
-												<Label style={{color:"#ffffff"}}>Lugar</Label>
 												<FontAwesome 
 													style={{
 														color: "#ffffff",
@@ -302,9 +461,8 @@ export default class FormEvent extends React.Component{
 												</FontAwesome>
 											</Text>
 										</TouchableOpacity>
-									</Item>
 								</Col>
-								<Col>
+								<Col style={{width: "77%"}}>
 									<Item floatingLabel>
 										<Label style={{ color: "#ffffff" }}>Direccion</Label>
 										<Input enabled={false} editable={false} style={{ color: "#ffffff" }} value={this.state.address} onChangeText={address=>{ this.setState({address: this.state.event.setAttribute('address', address)}); }} multiline={true} numberOfLines={4} />
@@ -312,51 +470,71 @@ export default class FormEvent extends React.Component{
 								</Col>
 							</Row>
 						</Grid>
-						<Item floatingLabel>
-							<Label style={{ color: "#ffffff" }}>Detalles</Label>
-							<Input  style={{ color: "#ffffff" }} value={this.state.description} onChangeText={text=>{ this.setState({description: this.state.event.setAttribute('description', text)}); }} multiline={true} numberOfLines={4} />
-						</Item>
-						<Item floatingLabel>
-							<Label style={{ color: "#ffffff" }}>Video promocional (Link)</Label>
-							<Input 
-								style={{ color: "#ffffff" }} 
-								onChangeText={ video_link =>{ this.setState({ video_link: this.state.event.setAttribute('video_link', video_link) }) }}  
-								value={this.state.video_link}
-							/>
-						</Item>
 						<Row>
-							<Col style={{ width: "100%" }}>
+							<Col style={{width: "95%"}}>
+								<Item floatingLabel>
+									<Label style={{ color: "#ffffff" }}>Detalles</Label>
+									<Input  style={{ color: "#ffffff" }} value={this.state.description} onChangeText={text=>{ this.setState({description: this.state.event.setAttribute('description', text)}); }} multiline={true} numberOfLines={4} />
+								</Item>
+							</Col>
+						</Row>
+						<Row>
+							<Col style={{width: "95%"}}>
+								<Item floatingLabel>
+									<Label style={{ color: "#ffffff" }}>Video promocional (Link)</Label>
+									<Input 
+										style={{ color: "#ffffff" }} 
+										onChangeText={ video_link =>{ this.setState({ video_link: this.state.event.setAttribute('video_link', video_link) }) }}  
+										value={this.state.video_link}
+									/>
+								</Item>
+							</Col>
+						</Row>
+						<Row>
+							<Col style={{ width: "47%" }}>
 								<Item floatingLabel>
 									<Label style={{ color: "#ffffff" }}>Fecha y hora del evento</Label>
 									<Input 
 										style={{ color: "#ffffff" }} 
 										onChangeText={ event_day =>{ this.setState({ start_datetime: this.state.event.setAttribute('start_datetime', event_day) }) }}  
 										value={ moment(this.state.start_datetime ).format('YYYY-DD-MM hh:mm A') }
+										onFocus={ event =>{ Keyboard.dismiss(); this.setState({ showPicker: true, from: 'start_datetime' }); } }
+										
 									/>
 								</Item>
 							</Col>
-						</Row>
-						<Row>
-							<Col style={{ width: "100%" }}>
+							<Col style={{ width: "47%" }}>
 								<Item floatingLabel>
-									<Label style={{ color: "#ffffff" }}>Fecha y hora de finalizacion</Label>
+									<Label style={{ color: "#ffffff" }}>Fecha y hora de fin</Label>
 									<Input 
 										style={{ color: "#ffffff" }} 
 										onChangeText={ end_datetime =>{ this.setState({ end_datetime: this.state.event.setAttribute('end_datetime', end_datetime) }) }}  
 										value={ moment(this.state.end_datetime ).format('YYYY-DD-MM hh:mm A')}
+										onFocus={ event =>{ Keyboard.dismiss(); this.setState({ showPicker: true, from: 'end_datetime' }); } }
 									/>
 								</Item>
 							</Col>
 						</Row>
+					      <View style={{ flex: 1 }}>
+					        <DateTimePicker
+					          isVisible={this.state.showPicker}
+					          onConfirm={this._handleDatePicked}
+					          onCancel={this._hideDateTimePicker}
+					          mode={'datetime'}
+					        />
+					      </View>
+						</Grid>
 					</Form>
+					</Content>
 
 					<Button onPress={()=>{ 
 						if(this.state.meth == 'PUT')
 							this.state.event.update('PATCH','event', this.state.id ,this.props.navigation)
-						else
-							this.state.event.push(this.props.navigation, this.state.meth) 
+						else{
+							this.props.navigation.navigate('Entrada', { event: this.state.event, action: 'POST' })
+						}
 					}}  block style={{ backgroundColor: "#02A6A4", marginBottom: 52 }}>
-						<Text style={{color: "#ffffff"}}>PUBLICAR</Text>
+						<Text style={{color: "#ffffff"}}>CONTINUAR</Text>
 					</Button>
 				</ScrollView>
 				<View>

@@ -41,7 +41,8 @@ export default class Product extends Model{
 			'category',
 			'priority',
 			'user_id',
-			'store_id'
+			'item_id',
+			'item_type'
 		];
 
 		/**
@@ -61,7 +62,8 @@ export default class Product extends Model{
 			end_datetime : {type: 'date', required: true, alias: 'Fecha de fin del anuncio'},
 			priority: {type:'integer', required: true, alias: 'Prioridad de la publicacion'},
 			user_id: {type:'integer', required: true, alias: 'Usuario'},
-			store_id:  {type:'integer', required: true, alias: 'Tienda'}
+			item_id:  {type:'integer', required: true, alias: 'Tienda'},
+			item_type: {type:'string', required: true, alias: 'Tipo de item'}
 		}
 	}
 
@@ -109,5 +111,17 @@ export default class Product extends Model{
 			_bodyInit = (typeof(_bodyInit) == 'string') ? JSON.parse(_bodyInit) : _bodyInit;
 			store.dispatch(searchProducts(_bodyInit));
 		});
+	}
+
+	update(method, model, id, navigation){
+		let { data } = this;
+		if(data.image.search(';base64,') != -1 )
+			super.update(method, model, id, navigation);
+		else{
+			delete data['image'];
+			this.data = data;
+			super.update(method,model, id, navigation)
+		}
+		
 	}
 }

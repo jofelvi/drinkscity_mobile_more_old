@@ -15,7 +15,9 @@ import {
 	Icon,
 	Right,
 	Left,
-	Body
+	Body,
+	Row,
+	Col
 } from 'native-base';
 
 import {
@@ -30,9 +32,9 @@ import BackHandler from 'BackHandler';
 export default class ListFormsEvents extends React.Component{
 
 	static navigationOptions = {
-		title: 'Creacion de eventos',
+		title: 'CREACION DE EVENTOS',
 		headerTintColor: "#ffffff",
-		headerStyle: { backgroundColor: "#02A6A4" }
+		headerStyle: { backgroundColor: "#01DAC9" }
 	}
 
 	constructor(props){
@@ -54,6 +56,8 @@ export default class ListFormsEvents extends React.Component{
 				<Container>
 					<Content>
 						<List>
+							<Row>
+								<Col style={{width: "95%"}}>
 							<ListItem>
 								<Body>
 									<TouchableOpacity onPress={()=>{this.props.navigation.navigate('FormEvent', {meth: 'POST', tipo: "ESTANDAR", titulo: "Tipos de eventos", evento: false, priority: 0})}}>
@@ -68,6 +72,8 @@ export default class ListFormsEvents extends React.Component{
 									</TouchableOpacity>
 								</Body>
 							</ListItem>
+							</Col>
+							</Row>
 						</List>
 					</Content>
 				</Container>
