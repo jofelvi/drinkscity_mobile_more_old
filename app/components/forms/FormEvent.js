@@ -28,12 +28,15 @@ import {
 	Keyboard
 } from 'react-native'
 import MapView, { Marker } from 'react-native-maps';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 import Event from '../../classes/Event';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import Modal from "react-native-modal";
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import Cropper from '../../classes/Cropper';
+
+import GooglePlacesInput from '../Autocomplete';
 
 const moment = require('moment');
 
@@ -50,7 +53,7 @@ export default class FormEvent extends React.Component{
 
 
 	static navigationOptions = {
-		title: 'Crear evento',
+		title: 'CREAR EVENTO',
 		headerTintColor: "#ffffff",
 		headerStyle: { backgroundColor: "#01DAC9" }
 	}
@@ -336,12 +339,13 @@ export default class FormEvent extends React.Component{
 
 				return (
 					<Col>
-						<View style={{flex: 1, width: 150, height: 150, marginTop: 10, marginBottom: 3}}>
+						<View style={{flex: 1, width: "100%", alignContent: "center", alignSelf: "center" , height: 150, marginTop: 10, marginBottom: 3}}>
 							<Thumbnail 
 								square  
 								style={{
-									width: 150,
-									height: 160
+									width: "100%",
+									height: 160,
+									flex: 1
 								}}
 								source={{uri: (data.cover_url != undefined ) ? this.state.con.getProtocol()+'//'+this.state.con.getOnlyUrl()+data.cover_url : data }} 
 							/>
@@ -355,7 +359,6 @@ export default class FormEvent extends React.Component{
 											return k != i;
 										});
 										this.setState({ images: notDeletes  });
-										this.state.pub.setAttribute('images', this.state.images);
 
 									}}
 								>
@@ -371,6 +374,14 @@ export default class FormEvent extends React.Component{
 		
 			return items;
 		
+	}
+
+	getGoogleDescription = (data, details) =>{
+		this.setState({
+			address: this.state.event.setAttribute('address', data.description),
+			latitude: this.state.event.setAttribute('latitude', data.latitude)
+		});
+		//Alert.alert('DEBUG-ADDRESS', JSON.stringify(data));
 	}
 	render(){
 
@@ -408,7 +419,7 @@ export default class FormEvent extends React.Component{
 							<Col style={{width: "95%"}}>
 								<Item floatingLabel>
 									<Label 
-										style={{ color: "#ffffff" }} >Titulo del evento
+										style={{ color: "#ffffff" }} >Titulo del Evento
 									</Label>
 									<Input 
 										style={{ color: "#ffffff" }} 
@@ -418,55 +429,31 @@ export default class FormEvent extends React.Component{
 								</Item>
 							</Col>
 						</Row>
-						<Row>
+						<Row style={{ marginTop: 10 }}>
 							<Col style={{width: "95%", marginLeft: "2%"}}>
+								<Label style={{ color: "#ffffff", marginLeft: 7 }}>Categoria</Label>
 								<Picker
 									mode='dropdown'
 									onValueChange={value => { this.state.event.setAttribute('category', value); this.setState({category: value}); }}
-									style={{ color: "#ffffff" }}
+									style={{ color: "#ffffff", textDecorationLine: 'underline' }}
 									selectedValue={this.state.category}
+							       	itemStyle={{color: "#ffffff", backgroundColor: 'lightgrey', marginLeft: 0, paddingLeft: 15 }}
+							       	itemTextStyle={{ fontSize: 18, color: 'white' }}
 								>
-									<Item style={{color: "#ffffff" }} label="Categoria" value={''} />
+									<Item style={{color: "#ffffff" }} label="Seleccione Una Categoria" value={''} />
 									<Item style={{color: "#ffffff" }} label="Electronica" value={"electronica"} />
-									<Item style={{color: "#ffffff" }} label='Evento cultural' value={'evento_cultural'} />
+									<Item style={{color: "#ffffff" }} label='Evento Cultural' value={'evento_cultural'} />
 									<Item style={{color: "#ffffff" }} label='Otros' value={'otros'} /> 
 								</Picker>
 							</Col>
 						</Row>
 						<Grid>
 							<Row>
-								<Col style={{width: "18%", marginTop: "11%", marginRight: 0}}>
-										<TouchableOpacity 
-											onPress={()=>{ 
-												this.setState({togleModal: !this.state.togleModal }) ;
-												this.setState({ 
-													statusBarColor: "#000000", 
-												});
-											}}
-											style={{
-												alignSelf: "center",
-												alignItems: "center",
-												justifyContent: "center",
-												marginTop: "13%"
-											}}
-										>
-											<Text>
-												<FontAwesome 
-													style={{
-														color: "#ffffff",
-														fontSize: 52
-													}}
-												>
-													{Icons.mapMarker}
-												</FontAwesome>
-											</Text>
-										</TouchableOpacity>
-								</Col>
-								<Col style={{width: "77%"}}>
-									<Item floatingLabel>
-										<Label style={{ color: "#ffffff" }}>Direccion</Label>
-										<Input enabled={false} editable={false} style={{ color: "#ffffff" }} value={this.state.address} onChangeText={address=>{ this.setState({address: this.state.event.setAttribute('address', address)}); }} multiline={true} numberOfLines={4} />
-									</Item>
+								<Col style={{width: "95%"}}>
+									<Label style={{ color: "#ffffff", marginLeft: 14 }}>Direccion</Label>
+									<View style={{marginLeft: 14, alignSelf: "center", alignContent: "center", alignItems: "center"}} >
+										<GooglePlacesInput onDirectionSelect={this.getGoogleDescription} />
+									</View>
 								</Col>
 							</Row>
 						</Grid>
@@ -481,7 +468,7 @@ export default class FormEvent extends React.Component{
 						<Row>
 							<Col style={{width: "95%"}}>
 								<Item floatingLabel>
-									<Label style={{ color: "#ffffff" }}>Video promocional (Link)</Label>
+									<Label style={{ color: "#ffffff" }}>Video Promocional (Link)</Label>
 									<Input 
 										style={{ color: "#ffffff" }} 
 										onChangeText={ video_link =>{ this.setState({ video_link: this.state.event.setAttribute('video_link', video_link) }) }}  
@@ -491,7 +478,7 @@ export default class FormEvent extends React.Component{
 							</Col>
 						</Row>
 						<Row>
-							<Col style={{ width: "47%" }}>
+							<Col style={{ width: "95%" }}>
 								<Item floatingLabel>
 									<Label style={{ color: "#ffffff" }}>Fecha y hora del evento</Label>
 									<Input 
@@ -503,7 +490,9 @@ export default class FormEvent extends React.Component{
 									/>
 								</Item>
 							</Col>
-							<Col style={{ width: "47%" }}>
+						</Row>
+						<Row>
+							<Col style={{ width: "95%" }}>
 								<Item floatingLabel>
 									<Label style={{ color: "#ffffff" }}>Fecha y hora de fin</Label>
 									<Input 

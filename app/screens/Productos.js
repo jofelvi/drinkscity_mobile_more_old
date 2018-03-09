@@ -152,7 +152,7 @@ export default class Productos extends React.Component{
 		dato = ( dato instanceof Product ) ? dato : new Product(dato);
 		let day = moment(dato.data.created_at).format('DD-MM-YYYY');
 		return(
-			<TouchableHighlight onPress={()=>{ this.props.navigation.navigate('PorProducto', { product: dato.data, onDelete: this._onDelete }) }}>
+			<TouchableHighlight onPress={()=>{ this.props.navigation.navigate('PorProducto', { titulo: 'EDITAR: '+dato.data.name, product: dato.data, onDelete: this._onDelete }) }}>
 			<Col style={{width: "100%"}}>
 				<Card style={{flex: 0}}>
 					<CardItem cardBody>

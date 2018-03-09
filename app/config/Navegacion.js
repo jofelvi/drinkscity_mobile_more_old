@@ -90,7 +90,7 @@ const Navigation = StackNavigator({
 	SelectStoreScreen: {
 		screen: SelectStore,
 			navigationOptions: {
-			title:  'MIS TIENDAS',
+			title:  'MIS TIENDAS DRINKSCITY',
 			headerTintColor: "#ffffff",
 			headerStyle: { backgroundColor: "#01DAC9" },
 			headerLeft: ()=> null
@@ -106,7 +106,7 @@ const Navigation = StackNavigator({
 		screen: DetallesVentas,
 		navigationOptions:{
 			headerTintColor: "#ffffff",
-			title: 'Mis ventas'
+			title: 'MIS VENTAS'
 		}
 	},
 	portada: {

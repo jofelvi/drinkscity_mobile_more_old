@@ -41,7 +41,7 @@ var BackHandler = require('BackHandler');
 export default class Ventas extends Component{
 	
 	static navigationOptions = {
-		title: 'Mis ventas',
+		title: 'MIS VENTAS',
 		headerTintColor: "#ffffff",
 		headerStyle: { backgroundColor: "#01DAC9" }
 	}
@@ -151,15 +151,18 @@ export default class Ventas extends Component{
 						<ListItem>
 							<Left>
 								<TouchableOpacity onPress={ ()=>{ this.props.navigation.navigate('Detalles', { product, orders: this.state.orders }) } }>
-									<Text style={{color :"#ffffff"}}>
+									<Text style={{color :"#ffffff", textAlign: "center"}}>
 										{product.name}
 									</Text>
 								</TouchableOpacity>
 							</Left>
 							<Body/>
 							<Right>
-								<Text style={{color: "#ffffff"}} >
-									Total: {product.validates}
+								<Text style={{color: "#ffffff", textAlign: "center"}} >
+									Total
+								</Text>
+								<Text style={{color: "#ffffff", textAlign: "center"}} >
+								 	{product.validates}
 								</Text>
 							</Right>
 						</ListItem>

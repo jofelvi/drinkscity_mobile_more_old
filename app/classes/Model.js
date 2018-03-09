@@ -214,7 +214,6 @@ export default class Model{
 				Authorization: token.token
 			}
 		}).then( resp =>{
-			let valid = this._validSessionOrKill(resp, navigation);
 			if(resp.status == 200 || resp.status == '200')
 				return JSON.parse(resp._bodyInit);
 			navigation.navigate('RootScreen')

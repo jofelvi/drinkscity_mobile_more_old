@@ -9,7 +9,7 @@ export default class Connection{
 		this.data = {
 			protocol: 'http:',
 			secure_protocol: 'https:',
-			host: 'www.drinkscity.cl:36521/api/v1',
+			host: 'www.drinkscity.cl/api/v1',
 			port: 36572,
 			onlyUrl: 'www.drinkscity.cl:36521',
 			onSession: false,

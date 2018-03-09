@@ -56,12 +56,8 @@ export default class Funcionario extends Model{
 		}
 
 		this.roles = [
-			{name: 'admin', description: 'Administrador'},
-			{name: 'store_admin', description: 'Store Admin'},
 			{name: 'validator', description: 'Validador'},
-			{name: 'rrpp', description: 'RRPP'},
-			{name: 'customer', description:'Customer'},
-			{name: 'guest', description:'Visitante'}
+			{name: 'rrpp', description: 'RRPP'}
 		];
 	}
 

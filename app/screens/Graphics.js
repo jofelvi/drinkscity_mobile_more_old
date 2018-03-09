@@ -14,7 +14,8 @@ import {
 	Text,
 	Card,
 	CardItem,
-	H3
+	H3,
+	Left
 } from 'native-base';
 
 
@@ -27,7 +28,7 @@ import {
 export default class Graphics extends Component{
 
 	static navigationOptions = ({navigation})=> ({
-		title:  'GRAFICOS ESTADISTICOS DE VENTA',
+		title:  'GRAFICOS DE VENTA',
 		headerTintColor: "#ffffff",
 		headerStyle: { backgroundColor: "#01DAC9" }
 	});
@@ -97,6 +98,11 @@ export default class Graphics extends Component{
 				<StatusBar translucent backgroundColor={'#02A6A4'} />
 				<ScrollView>
 				<Card >
+					<CardItem>
+						<Left>
+							<H3>Ventas por Productos</H3>
+						</Left>
+					</CardItem>
 					<CardItem style={{width: "100%"}}>
 						<VictoryChart 
 							theme={VictoryTheme.material} 
@@ -112,6 +118,11 @@ export default class Graphics extends Component{
 					</CardItem>
 				</Card>
 				<Card>
+					<CardItem>
+						<Left>
+							<H3>Cantidad de Ventas</H3>
+						</Left>
+					</CardItem>
 					<CardItem style={{width: "100%"}}>
 						<VictoryChart 
 							theme={VictoryTheme.material} 
@@ -127,6 +138,11 @@ export default class Graphics extends Component{
 					</CardItem>
 				</Card>
 				<Card>
+					<CardItem>
+						<Left>
+							<H3>Ventas anuales</H3>
+						</Left>
+					</CardItem>
 					<CardItem style={{width: "100%"}}>
 						<VictoryChart 
 							theme={VictoryTheme.material} 

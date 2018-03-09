@@ -80,7 +80,7 @@ export default class Botonera extends React.Component{
 				);
 
 				funcionarios = (
-								<TouchableOpacity onPress={ ()=>{ this.props.navigation.navigate('BtnFuncionarios', {titulo: 'Funcionarios', funcionario: false}); } }>
+								<TouchableOpacity onPress={ ()=>{ this.props.navigation.navigate('BtnFuncionarios', {titulo: 'FUNCIONARIOS', funcionario: false}); } }>
 									<BackgroundButton 
 										imagen={require('../assets/img/banda.png')} 
 										text={'FUNCIONARIOS'} 

@@ -73,8 +73,14 @@ export default class SelectStore extends Component{
 
 	}
 
-	componentWillMount(){
+	componentWillMount(){	
 		this.getSucursales()
+	}
+
+	componentDidMount(){
+		BackHandler.addEventListener('hardwareBackPress', ()=>{
+			return true;
+		});
 	}
 
 	async useStore(store){

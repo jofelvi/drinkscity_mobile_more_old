@@ -127,7 +127,7 @@ export default class Funcionarios extends React.Component{
 			return(
 				<ListItem key={data.id}>
 					<Body>
-						<TouchableOpacity onPress={()=>{this.props.navigation.navigate('FormFuncionario', {titulo: data.fullname ? data.fullname : 'Editar usuario',accion: "editar", funcionario: data, onUpdate: this.onUpdate})}}>
+						<TouchableOpacity onPress={()=>{this.props.navigation.navigate('FormFuncionario', {titulo: data.fullname ? data.fullname : 'EDITAR USUARIO',accion: "editar", funcionario: data, onUpdate: this.onUpdate})}}>
 							<Text style={{color: "#ffffff"}}>
 								{ (data.fullname == null) ? 'No aplica' : data.fullname }
 							</Text>
@@ -185,7 +185,7 @@ export default class Funcionarios extends React.Component{
 			            containerStyle={{ }}
 			            style={{ backgroundColor: '#02A6A4' }}
 			            position="bottomRight"
-			            onPress={()=>{this.props.navigation.navigate('FormFuncionario', {titulo: 'Crear Funcionario', accion: 'crear' ,funcionario: false, onBack: this.onBack, onUpdate: this.onUpdate})}}>
+			            onPress={()=>{this.props.navigation.navigate('FormFuncionario', {titulo: 'CREAR FUNCIONARIO', accion: 'crear' ,funcionario: false, onBack: this.onBack, onUpdate: this.onUpdate})}}>
 			            <Text>
 			            	<FontAwesome>{Icons.plus}</FontAwesome>
 			            </Text>

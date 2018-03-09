@@ -48,6 +48,7 @@ import BackHandler from 'BackHandler';
 import Cropper from '../classes/Cropper';
 import FontAwesome, {Icons} from 'react-native-fontawesome';
 
+import GooglePlacesInput from '../components/Autocomplete';
 import Modal from "react-native-modal";
 
 const moment = require('moment');
@@ -269,6 +270,12 @@ export default class StoreRegister extends React.Component{
 		}
 
 	}
+	getGoogleDescription = (data, details) =>{
+		this.setState({
+			address: data.description
+		});
+		Alert.alert('DEBUG-ADDRESS', JSON.stringify(data));
+	}
 
 	render(){
 		const { width, height } = Dimensions.get('screen')
@@ -317,13 +324,13 @@ export default class StoreRegister extends React.Component{
 							<Grid>
 								<Row>
 									<Col style={{width: "95%"}}>
-										<H2 style={{color: "#02A6A4", marginLeft: 14, marginTop: 4}} >Datos de la tienda</H2>
+										<H2 style={{color: "#02A6A4", marginLeft: 14, marginTop: 4}} >Datos de la Tienda</H2>
 									</Col>
 								</Row>
 								<Row>
 									<Col style={{width: "95%"}}>
 									<Item floatingLabel>
-										<Label style={{color: "#ffffff"}}>Nombre de la tienda</Label>
+										<Label style={{color: "#ffffff"}}>Nombre de la Tienda</Label>
 										<Input  onChangeText={text => this.setState({ name: text }) } value={this.state.name} style={{color: "#ffffff"}} />
 									</Item>
 									</Col>
@@ -331,20 +338,21 @@ export default class StoreRegister extends React.Component{
 								<Row>
 									<Col style={{width: "95%"}}>
 									<Item floatingLabel>
-										<Label style={{color: "#ffffff"}}>Reseña de la tienda</Label>
+										<Label style={{color: "#ffffff"}}>Reseña de la Tienda</Label>
 										<Input onChangeText={text=>{ this.setState({ description: text }) }} style={{color: "#ffffff"}} multiline numberOfLines={3} />
 									</Item>
 									</Col>
 
 								</Row>
-								<Row>
-									<Col>
+								<Row style={{ marginTop: 10 }}>
+									<Col style={{width: "95%", marginLeft: "2%"}}>
+										<Label style={{ color: "#ffffff", marginLeft: 7 }}>Ciudad</Label>
 										<Picker
 											 style={{color: "#ffffff"}}
 											 onValueChange={value=> { this.setState({ region : value }); }}
 											 selectedValue={this.state.region}
 										>
-											<Item style={{color: "#ffffff"}}  label={'Seleccionar uno'} value={''} />
+											<Item style={{color: "#ffffff"}}  label={'Seleccione una Ciudad'} value={''} />
 											
 											<Item  style={{color: "#ffffff"}} label={'Arica y parinacot'} value={'arica_y_parinacota'} />
 											<Item  style={{color: "#ffffff"}} label={'Tarapaca'} value={'tarapaca'} />
@@ -367,13 +375,13 @@ export default class StoreRegister extends React.Component{
 								<Row>
 									<Col style={{width: "47%"}}>
 									<Item floatingLabel>
-										<Label style={{color: "#ffffff"}}>Rut de la tienda</Label>
+										<Label style={{color: "#ffffff"}}>Rut de la Tienda</Label>
 										<Input onChangeText={ value => { this.setState({ rut: value }) } } style={{color: "#ffffff"}} />
 									</Item>
 									</Col>
 									<Col style={{width: "47%"}}>
 									<Item floatingLabel>
-										<Label style={{color: "#ffffff"}}>Telefono de la tienda</Label>
+										<Label style={{color: "#ffffff"}}>Telefono de la Tienda</Label>
 										<Input onChangeText={text => { this.setState({ phone: text }) }} style={{color: "#ffffff"}} />
 									</Item>
 									</Col>
@@ -381,35 +389,35 @@ export default class StoreRegister extends React.Component{
 								<Row>
 									<Col style={{width: "47%"}}>
 									<Item floatingLabel>
-										<Label style={{color: "#ffffff"}}>Dias laborales</Label>
+										<Label style={{color: "#ffffff"}}>Dias Laborales</Label>
 										<Input onChangeText={ value => { this.setState({  days_opened : value }) } } style={{color: "#ffffff"}} />
 									</Item>
 									</Col>
 									<Col style={{width: "47%"}}>
 									<Item floatingLabel>
-										<Label style={{color: "#ffffff"}}>Horas de apertura</Label>
+										<Label style={{color: "#ffffff"}}>Horas de Apertura</Label>
 										<Input onChangeText={text => { this.setState({ time_opened: text }) }} style={{color: "#ffffff"}} />
 									</Item>
 									</Col>
 								</Row>
 								<Row>
 									<Col style={{width: "95%"}}>
-									<Item floatingLabel>
-										<Label style={{color: "#ffffff"}}>Direccion de la tienda</Label>
-										<Input onChangeText={text=> { this.setState({ address: text }) }}  style={{color: "#ffffff"}} multiline numberOfLines={3} />
-									</Item>
+										<Label style={{ color: "#ffffff", marginLeft: 14 }}>Direccion de la Tienda</Label>
+										<View style={{marginLeft: 14, alignSelf: "center", alignContent: "center", alignItems: "center"}} >
+											<GooglePlacesInput onDirectionSelect={this.getGoogleDescription} />
+										</View>
 									</Col>
 
 								</Row>
 								<Row>
 									<Col style={{width: "95%"}}>
-										<H2 style={{color: "#02A6A4", marginLeft: 14, marginTop: 4}} >Datos del representante</H2>
+										<H2 style={{color: "#02A6A4", marginLeft: 14, marginTop: 4}} >Datos del Representante</H2>
 									</Col>
 								</Row>
 								<Row>
 									<Col style={{width: "95%"}}>
 									<Item floatingLabel>
-										<Label style={{color: "#ffffff"}}>Representante legal de la tienda</Label>
+										<Label style={{color: "#ffffff"}}>Representante Legal de la Tienda</Label>
 										<Input onChangeText={text=> { this.setState({ legal_agent: text }) } }  style={{color: "#ffffff"}} />
 									</Item>
 									</Col>
@@ -417,7 +425,7 @@ export default class StoreRegister extends React.Component{
 								<Row>
 									<Col style={{width: "90%"}}>
 									<Item floatingLabel>
-										<Label style={{color: "#ffffff"}}>Correo del representante legal de la tienda</Label>
+										<Label style={{color: "#ffffff"}}>Correo del Representante Legal de la Tienda</Label>
 										<Input  onChangeText={ text=>{ this.setState({ legal_agent_email: text }) } } style={{color: "#ffffff"}} />
 									</Item>
 									</Col>
@@ -425,90 +433,17 @@ export default class StoreRegister extends React.Component{
 								<Row>
 									<Col style={{width: "47%"}}>
 									<Item floatingLabel>
-										<Label style={{color: "#ffffff"}}>Rut del representante</Label>
+										<Label style={{color: "#ffffff"}}>Rut del Representante</Label>
 										<Input  onChangeText={ text=>{ this.setState({ legal_agent_rut: text }) } } style={{color: "#ffffff"}} />
 									</Item>
 									</Col>
 									<Col style={{width: "47%"}}>
 									<Item floatingLabel>
-										<Label style={{color: "#ffffff"}}>Tlfno / rep.</Label>
+										<Label style={{color: "#ffffff"}}>Tlfno / Rep.</Label>
 										<Input  onChangeText={ text=>{ this.setState({ legal_agent_phone: text }) } } style={{color: "#ffffff"}} />
 									</Item>
 									</Col>
 								</Row>
-								<Row>
-									<Col style={{width: "27%", alignSelf: "center", alignItems: "flex-end", justifyContent: "flex-end"}}>
-										<Button 
-											onPress={()=>{
-												this.setState({
-													img_kind: 1
-												});
-												ImagePicker.showImagePicker(options, this._onImageSelect)
-											}}
-
-											rounded
-										>
-											<Text>
-												Perfil
-											</Text>
-										</Button>
-									</Col>
-									<Col style={{width: "63%"}}>
-										<Item floatingLabel>
-											<Label style={{color:"#ffffff"}}>Imagen seleccionada</Label>
-											<Input style={{color:"#ffffff"}} disabled value={this.state.perfil_name} />
-										</Item>
-									</Col>
-								</Row>
-								<Row>
-									<Col style={{width: "27%", alignSelf: "center", alignItems: "flex-end", justifyContent: "flex-end"}}>
-										<Button 
-											onPress={()=>{
-												this.setState({
-													img_kind: 2
-												});
-												ImagePicker.showImagePicker(options, this._onImageSelect)
-											}}
-
-											rounded
-										>
-											<Text>
-												Portada
-											</Text>
-										</Button>
-									</Col>
-									<Col style={{width: "63%"}}>
-										<Item floatingLabel>
-											<Label style={{color:"#ffffff"}}>Imagen seleccionada</Label>
-											<Input style={{color:"#ffffff"}} disabled value={this.state.portada_name} />
-										</Item>
-									</Col>
-								</Row>
-								<Row>
-									<Col style={{width: "27%", alignSelf: "center", alignItems: "flex-end", justifyContent: "flex-end"}}>
-										<Button 
-											onPress={()=>{
-												this.setState({togleModal: !this.state.togleModal }) ;
-												this.setState({ 
-													statusBarColor: "#000000", 
-												});
-											}}
-
-											rounded
-										>
-											<Text>
-												<FontAwesome style={{fontSize: 22}}>{Icons.mapMarker}</FontAwesome>
-											</Text>
-										</Button>
-									</Col>
-									<Col style={{width: "63%"}}>
-										<Item floatingLabel>
-											<Label style={{color:"#ffffff"}}>Imagen seleccionada</Label>
-											<Input style={{color:"#ffffff"}} disabled value={this.state.longitude+', '+this.state.latitude} />
-										</Item>
-									</Col>
-								</Row>
-
 								<Row style={{marginTop: 7, marginBottom: 4}}>	
 									<Col style={{width: "9%"}}>
 										<CheckBox checked={this.state.delivery} onPress={()=>{ this.setState({ delivery: !this.state.delivery }) }} />

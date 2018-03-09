@@ -38,6 +38,8 @@ import Connection from '../config/connection'
 import Event from '../classes/Event';
 import { store } from '../redux/store';
 
+var BackHandler = require('BackHandler')
+
 export default class ListaEventos extends React.Component{
 
 	static navigationOptions = ({navigation}) => ({
@@ -51,7 +53,13 @@ export default class ListaEventos extends React.Component{
 		this.state = {
 			active: false,
 			eventos: [],
-			menuActive :false
+			menuActive :false,
+			store: null,
+			tipos: {
+				"electronica": "Electronica" ,
+				"evento_cultural": 'Evento Cultural',
+				"otros": 'Otros'
+			}
 		}
 
 		store.subscribe( ()=> {
@@ -64,12 +72,24 @@ export default class ListaEventos extends React.Component{
 			this.setState({
 				eventos: events
 			});
-			//Alert.alert('DE', JSON.stringify(this.state.eventos[5]))
+			//Alert.alert('DE', JSON.stringify(this.state.eventos[5].data.store))
 		});
 
 	}
 
+	async componentDidMount(){
+		let session = await AsyncStorage.getItem('@session');
+		let { store } = await JSON.parse(session);
+		this.setState({
+			store
+		});
+		//Alert.alert('DEBUG', JSON.stringify(this.state.store));
+	}
+
 	componentWillMount(){
+
+		BackHandler.removeEventListener('hardwareBackPress', ()=> true);
+		BackHandler.addEventListener('hardwareBackPress', ()=> this.props.navigation.goBack());
 		let ev = new Event();
 		ev.getAll();
 	}
@@ -128,42 +148,50 @@ export default class ListaEventos extends React.Component{
 
 	_renderList(){
 		let con =new Connection();
-
-		const items = this.state.eventos.map( (data, i)=>{
-			return(
-					<Card style={{ width: "99%", borderColor: "#01DAC9", borderWidth: 1, backgroundColor: "#111111" }} >
-						<CardItem style={{backgroundColor: "#111111"}}>
-							<Left />
-							<Body />
-							<Right>
-								<PopMenu navigation={this.props.navigation} onDelete={this._onDelete}  model={'events'} onUpdatePress={this._onUpdateButtonPress} onUpdate={this._onUpdate}  navigation={this.props.navigation} evento={data} eventos={this.state.eventos} />
-							</Right>
-						</CardItem>
-						<CardItem cardBody style={{backgroundColor: "#111111"}}>
-							<Image 
-								source={{uri: this._loadUrlImageResource(data.data) }}
-								style={{
-									width: "100%",
-									height: 220,
-									flex: 1
-								}}
-							/>
-						</CardItem>
-						<CardItem style={{backgroundColor: "#111111"}}>
-							<Col>
-								<Text selectable={true} style={{color: "#ffffff",textAlign: "center", width: "100%", fontSize: 17,}}>
-									{data.data.name}
-								</Text>
-								<Text selectable={true} style={{color: "#ffffff",textAlign: "center", width: "100%", fontSize: 17,}}>
-									{data.data.category}
-								</Text>							
-							</Col>
-						</CardItem>
-					</Card>
-			);
-		});
-
-		return items;
+		let { tipos } = this.state;
+		let { store } = this.state;
+		if(store !== null){
+			const items = this.state.eventos.map( (data, i)=>{
+				let datos = data.data;
+				//Alert.alert('data', JSON.stringify(datos)+ ' -> '+JSON.stringify(store));
+				if(datos.store.id == store.id){
+					return(
+							<Card style={{ width: "99%", borderColor: "#01DAC9", borderWidth: 1, backgroundColor: "#111111" }} >
+								<CardItem style={{backgroundColor: "#111111"}}>
+									<Left />
+									<Body />
+									<Right>
+										<PopMenu navigation={this.props.navigation} onDelete={this._onDelete}  model={'events'} onUpdatePress={this._onUpdateButtonPress} onUpdate={this._onUpdate}  navigation={this.props.navigation} evento={data} eventos={this.state.eventos} />
+									</Right>
+								</CardItem>
+								<CardItem cardBody style={{backgroundColor: "#111111"}}>
+									<Image 
+										source={{uri: this._loadUrlImageResource(data.data) }}
+										style={{
+											width: "100%",
+											height: 220,
+											flex: 1
+										}}
+									/>
+								</CardItem>
+								<CardItem style={{backgroundColor: "#111111"}}>
+									<Col>
+										<Text selectable={true} style={{color: "#ffffff",textAlign: "center", width: "100%", fontSize: 17,}}>
+											{data.data.name}
+										</Text>
+										<Text selectable={true} style={{color: "#ffffff",textAlign: "center", width: "100%", fontSize: 17,}}>
+											{tipos[data.data.category]}
+										</Text>							
+									</Col>
+								</CardItem>
+							</Card>
+					);
+				}
+			});
+			return items;
+		}
+		return null;
+		
 	}
 
 	render(){
