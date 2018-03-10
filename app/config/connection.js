@@ -11,9 +11,10 @@ export default class Connection{
 			secure_protocol: 'https:',
 			host: 'www.drinkscity.cl/api/v1',
 			port: 36572,
-			onlyUrl: 'www.drinkscity.cl:36521',
+			onlyUrl: 'www.drinkscity.cl',
 			onSession: false,
-			token: null
+			token: null,
+			google_api_key: 'AIzaSyDdzklbLf_ANmGOWEfDNtNVLFMqNy65yBA'
 		}
 
 	}
@@ -29,6 +30,10 @@ export default class Connection{
 		}catch(err){
 			console.log(err)
 		}
+	}
+
+	getGoogleKey(){
+		return this.data.google_api_key;
 	}
 
 	getOnlyUrl(){

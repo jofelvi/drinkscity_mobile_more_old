@@ -75,7 +75,7 @@ export default class FormEvent extends React.Component{
 						'end_datetime': moment((new Date()), 'YYYY-MM-DD').format('YYYY-MM-DD'),
 						'description': '',
 						'user_id': 1,
-						'store_id': 2,
+						'store_id': 0,
 						'active': '',
 						'longitude': '-',
 						'latitude': '-',
@@ -378,8 +378,7 @@ export default class FormEvent extends React.Component{
 
 	getGoogleDescription = (data, details) =>{
 		this.setState({
-			address: this.state.event.setAttribute('address', data.description),
-			latitude: this.state.event.setAttribute('latitude', data.latitude)
+			address: this.state.event.setAttribute('address', data.description)
 		});
 		//Alert.alert('DEBUG-ADDRESS', JSON.stringify(data));
 	}

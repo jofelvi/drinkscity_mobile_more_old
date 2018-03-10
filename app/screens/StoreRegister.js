@@ -50,6 +50,7 @@ import FontAwesome, {Icons} from 'react-native-fontawesome';
 
 import GooglePlacesInput from '../components/Autocomplete';
 import Modal from "react-native-modal";
+import Qs from 'qs';
 
 const moment = require('moment');
 const ImagePicker = require('react-native-image-picker');
@@ -67,7 +68,7 @@ var options = {
 export default class StoreRegister extends React.Component{
 
 	static navigationOptions = {
-		title: 'Registro de tienda',
+		title: 'REGISTRO DE TIENDA',
 		headerTintColor: "#ffffff",
 		headerStyle: { backgroundColor: "#01DAC9" }
 	}
@@ -91,7 +92,6 @@ export default class StoreRegister extends React.Component{
 				latitudeDelta: 0.015,
 				longitudeDelta: 0.0121,
 			},
-			markers: [],
 			longitude: '--',
 			latitude: '--',
 			name: '',
@@ -113,24 +113,14 @@ export default class StoreRegister extends React.Component{
 			user_id: user.id,
 			salvar: false
 		}
+		//Alert.alert('DEBUG', JSON.stringify(this.state))
 		navigator.geolocation.getCurrentPosition(
 		    (position) => {
-		    	var { markers } = this.state;
-		    	markers[0] = this.regionFrom(
-		        		position.coords.latitude, 
-		        		position.coords.longitude, 
-		        		position.coords.accuracy
-		        	);
-		    	markers[1] = { ...markers[0] };
 		        this.setState({
-		        	markers: markers,
-		        	currentRegion: {
-		        		...markers[0]
-		        	}, 
-		        	longitude:  markers[0].longitude,
-		        	latitude: 	markers[0].latitude
-		        })
-
+		        	longitude: position.coords.longitude,
+		        	latitude:  position.coords.latitude
+		        });
+		        //Alert.alert('DEBUG-LOCATION', this.state.longitude+' -> '+this.state.latitude)
 		       	//Alert.alert("coords", "longitud: "+position.coords.longitude+' Longitud State: '+this.state.currentRegion.longitudeDelta+' latitude: '+position.coords.latitude+' accuracy: '+position.coords.accuracy)
 		    },
 		    (error) => alert(error.message),
@@ -201,23 +191,6 @@ export default class StoreRegister extends React.Component{
 		})
 	}
 
-	_renderMarkers(){
-		let {markers} = this.state;
-
-
-		const marks = markers.map((data, i) =>{
-			if( i > 0)
-			{
-				return <Marker 
-						draggable={ (i > 0) } 
-						onDragEnd={ coords =>{this._onDragMarker(coords)} } 
-						coordinate={{...data}}
-					/>
-			}
-		});
-
-		return marks;
-	}
 	_onImageSelect = (response) =>{
 
 		if(response.didCancel){
@@ -244,37 +217,38 @@ export default class StoreRegister extends React.Component{
 		}
 	}
 
-	_onPressPositionMap(coord){
-		var { coordinate } = coord.nativeEvent
-		var { markers } = this.state
-		markers[1] = {longitude: coordinate.longitude, latitude: coordinate.latitude};
-		this.setState({
-			markers: markers,
-			longitude: coordinate.longitude,
-			latitude: coordinate.latitude
-		});
+	async getGeometryPlace(data){
+		let con = new Connection();
+		let params = Qs.stringify({
+			location: this.state.latitude+','+this.state.longitude,
+			radius: 22000,
+			types: 'museum',
+			place_id: data.place_id,
+			key: con.getGoogleKey()
+		})
+		let url = `https://maps.googleapis.com/maps/api/place/radarsearch/json?${params}`
+		let resp = await fetch(url, {
+			method: 'GET'
+		}).then( resp =>{
+			let { _bodyInit } = resp;
+			_bodyInit =( typeof(_bodyInit) == 'string' ) ? JSON.parse(_bodyInit) : _bodyInit;
+			let { geometry } = _bodyInit.results[0];
+			this.setState({
+				longitude: geometry.location.lng,
+				latitude: geometry.location.lat
+			});
+		} )
+
+		//Alert.alert('DEBUG-FINAL', JSON.stringify(this.state))
 	}
 
-	region(){
-		const { markers } = this.state;
-		if(markers.length > 1){
 
-			var coords = markers[1];
-			return {
-				...coords
-			};
-		}
-
-		return {
-			...this.state.currentRegion
-		}
-
-	}
 	getGoogleDescription = (data, details) =>{
 		this.setState({
 			address: data.description
 		});
-		Alert.alert('DEBUG-ADDRESS', JSON.stringify(data));
+		
+		this.getGeometryPlace(data);
 	}
 
 	render(){
@@ -303,18 +277,6 @@ export default class StoreRegister extends React.Component{
 			            		<FontAwesome style={{fontSize: 26}}>{Icons.close}</FontAwesome>
 			            	</Text>
 			            </TouchableOpacity>
-					      <View style ={styles.containerMap}>
-					        <MapView
-					          style={styles.map}
-					          initialRegion={this.state.currentRegion}
-					          onPress={ point => this._onPressPositionMap(point)  }
-					        >
-								<Marker   
-									coordinate={{...this.state.currentRegion}}
-								/>
-					        	{this._renderMarkers()}
-					        </MapView>
-					      </View>
 			          </View>
 
 			        </Modal>
@@ -404,7 +366,7 @@ export default class StoreRegister extends React.Component{
 									<Col style={{width: "95%"}}>
 										<Label style={{ color: "#ffffff", marginLeft: 14 }}>Direccion de la Tienda</Label>
 										<View style={{marginLeft: 14, alignSelf: "center", alignContent: "center", alignItems: "center"}} >
-											<GooglePlacesInput onDirectionSelect={this.getGoogleDescription} />
+											<GooglePlacesInput longitude={this.state.longitude} latitude={this.state.latitude} onDirectionSelect={this.getGoogleDescription} />
 										</View>
 									</Col>
 
