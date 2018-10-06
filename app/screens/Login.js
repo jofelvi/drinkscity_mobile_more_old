@@ -7,7 +7,9 @@ import {
 	StatusBar,
 	TouchableOpacity,
 	AsyncStorage,
-	Keyboard
+	Keyboard,
+	StyleSheet, 
+	TextInput
 } from 'react-native';
 
 import {
@@ -36,6 +38,12 @@ import FontAwesome, {Icons} from 'react-native-fontawesome'
 import BackHandler from 'BackHandler';
 
 const con = new Connection();
+
+const inputStyles = StyleSheet.create({
+	inputLogin: {
+		color: "#ffffff"
+	}
+})
 
 export default class Login extends React.Component {
 
@@ -120,9 +128,9 @@ export default class Login extends React.Component {
 	render(){
 		return(
 			<View style={styles.container}>
-				<StatusBar translucent backgroundColor={'#111111'} />
+				<StatusBar translucent={false} backgroundColor={'#111111'} />
 				<Container>
-					<Content style={{marginTop: "22%"}}>
+					<Content style={{ backgroundColor: '#111111'}}>
 						<Form>
 							<Grid>
 								<Row style={{width: "100%"}}>
@@ -145,11 +153,13 @@ export default class Login extends React.Component {
 									<Col style={{width: "95%"}}>
 										<Item floatingLabel style={{ borderColor: this.state.mailborderColor }}>
 											<Label style={{color: "#ffffff"}}>Correo electronico</Label>
-											<Input 
-												style={{color: "#ffffff"}}
+											<TextInput 
+												Color={"#FFFFFF"}
+												tintColor={"#FFFFFF"}
+												style={[inputStyles.inputLogin, {borderColor: this.state.passborderColor} ]}
 												onFocus={ ev => { this.setState({ mailborderColor: '#01DAC9' }) } }
 												onBlur={ br =>{ this.setState({ mailborderColor: ( (this.state.mailchangeColor) ? '#ffffff' : '#01DAC9' ) }) } }
-												
+												underlineColorAndroid={this.state.mailchangeColor}
 												onChangeText={text =>{ this.setState({ email: text }); this.setState({ mailchangeColor: (text.length == 0) }); } }
 											/>
 
@@ -160,11 +170,14 @@ export default class Login extends React.Component {
 									<Col style={{width: "95%"}}>
 										<Item floatingLabel style={{ borderColor: this.state.passborderColor }}>
 											<Label style={{color: "#ffffff"}}>Clave</Label>
-											<Input 
-												style={{color: "#ffffff", borderColor: this.state.passborderColor }}
+											<TextInput 
+												Color={"#FFFFFF"}
+												tintColor={"#FFFFFF"}
+												style={ [inputStyles.inputLogin, {borderColor: this.state.passborderColor} ] }
 												onFocus={ ev => { this.setState({ passborderColor: '#01DAC9' }) } }
 												onBlur={ br =>{ this.setState({ passborderColor: ( (this.state.passchangeColor) ? '#ffffff' : '#01DAC9' ) }) } }
 												secureTextEntry={true}
+												underlineColorAndroid={this.state.mailchangeColor}
 												onChangeText={text =>{ this.setState({ password: text });  this.setState({ passchangeColor: (text.length == 0) }); } }
 											/>
 

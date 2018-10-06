@@ -41,7 +41,7 @@ export default class FuncionarioForm extends React.Component{
 
 		return(
 			<View style={styles.container}>
-				<StatusBar translucent backgroundColor={'#02A6A4'} />
+				<StatusBar translucent={false} backgroundColor={'#02A6A4'} />
 				<Container>
 
 					<Form>

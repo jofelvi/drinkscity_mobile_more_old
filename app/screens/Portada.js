@@ -48,7 +48,7 @@ import Cropper from '../classes/Cropper';
 var ImagePicker = require('react-native-image-picker');
 
 var options = {
-  title: 'Cargar imagenes',
+  title: 'Seleccione una opción',
   storageOptions: {
     skipBackup: true,
     path: 'images'
@@ -217,7 +217,7 @@ export default class Portada extends React.Component{
 
 		return(
 			<Container style={styles.container}>
-				<StatusBar translucent backgroundColor={'#02A6A4'} />
+				<StatusBar translucent={false} backgroundColor={'#02A6A4'} />
 						<Row style={{marginTop:"50%"}}>
 							<Image
 								source={portada}

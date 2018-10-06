@@ -177,7 +177,7 @@ export default class Ventas extends Component{
 		const { width } = Dimensions.get('window')
 		return(
 			<View style={styles.container}>
-				<StatusBar translucent backgroundColor={'#02A6A4'} />
+				<StatusBar translucent={false} backgroundColor={'#02A6A4'} />
 					<Grid>
 						<Row>
 							<Col style={{alignSelf: "center", justifyContent: "center", alignItems: "center", alignContent: "center"}}>

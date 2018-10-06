@@ -150,7 +150,7 @@ export default class AboutFuncionario extends React.Component{
 		const { state } = this.props.navigation;
 		return(
 			<View style={styles.container}>
-				<StatusBar translucent backgroundColor={'#02A6A4'} />
+				<StatusBar translucent={false} backgroundColor={'#02A6A4'} />
 				<ScrollView>
 					<Form>
 						<Grid>

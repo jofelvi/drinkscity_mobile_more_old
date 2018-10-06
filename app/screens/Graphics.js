@@ -95,7 +95,7 @@ export default class Graphics extends Component{
 
 		return(
 			<View style={styles.container}>
-				<StatusBar translucent backgroundColor={'#02A6A4'} />
+				<StatusBar translucent={false} backgroundColor={'#02A6A4'} />
 				<ScrollView>
 				<Card >
 					<CardItem>

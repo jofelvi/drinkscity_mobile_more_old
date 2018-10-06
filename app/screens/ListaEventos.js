@@ -87,7 +87,6 @@ export default class ListaEventos extends React.Component{
 	}
 
 	componentWillMount(){
-
 		BackHandler.removeEventListener('hardwareBackPress', ()=> true);
 		BackHandler.addEventListener('hardwareBackPress', ()=> this.props.navigation.goBack());
 		let ev = new Event();
@@ -198,7 +197,7 @@ export default class ListaEventos extends React.Component{
 		return(
 			<MenuProvider>
 			<View style={styles.container}>
-				<StatusBar translucent backgroundColor={'#02A6A4'} />
+				<StatusBar translucent={false} backgroundColor={'#02A6A4'} />
 				<ScrollView>
 					{this._renderList()}
 				</ScrollView>

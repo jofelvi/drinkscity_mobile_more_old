@@ -53,7 +53,7 @@ export default class QRScaner extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <StatusBar translucent backgroundColor={'#02A6A4'} />
+        <StatusBar translucent={false} backgroundColor={'#02A6A4'} />
         <QRScannerView  
           onScanResultReceived={this._onBarCodeRead.bind(this)}
           renderTopBarView={this._topBarView.bind(this)}

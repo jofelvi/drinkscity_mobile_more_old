@@ -163,6 +163,7 @@ export default class Model{
 
 		let json = JSON.stringify(this.data)
 		const body = '{"'+param+'":'+json+'}';
+
 		return await fetch( connection.getUrlApi(this._model), {
 			method,
 			headers:{
@@ -201,7 +202,6 @@ export default class Model{
 
 	async getAll(navigation = null){
 
-
 		let session = await AsyncStorage.getItem("@session");
 		let token = await JSON.parse(session);
 
@@ -214,9 +214,12 @@ export default class Model{
 				Authorization: token.token
 			}
 		}).then( resp =>{
-			if(resp.status == 200 || resp.status == '200')
+			if(resp.status == 200 || resp.status == '200'){
+				//Alert.alert("RESPOSE", resp._bodyInit);
 				return JSON.parse(resp._bodyInit);
+			}
 			navigation.navigate('RootScreen')
+
 		});
 
 		store.dispatch(modelActions(req, this._model));

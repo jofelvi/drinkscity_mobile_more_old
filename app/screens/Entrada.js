@@ -187,7 +187,7 @@ export default class Entrada extends React.Component{
 	render(){
 		return(
 			<View style={styles.container}>
-				<Content>
+				<Content style={{backgroundColor: '#111111'}}>
 					<Form>
 						<Grid>
 						<Row>

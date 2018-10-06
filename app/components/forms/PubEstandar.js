@@ -40,7 +40,7 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 const moment = require ('moment');
 
 var options = {
-  title: 'Cargar imagenes',
+  title: 'Seleccione una opción',
   storageOptions: {
     skipBackup: true,
     path: 'images'

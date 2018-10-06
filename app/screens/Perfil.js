@@ -33,7 +33,7 @@ import Connection from '../config/connection';
 
 import Cropper from '../classes/Cropper';
 var options = {
-  title: 'Cargar imagenes',
+  title: 'Seleccione una opciòn',
   storageOptions: {
     skipBackup: true,
     path: 'images'
@@ -165,7 +165,7 @@ export default class Perfil extends React.Component{
 
 		return(
 			<Container style={styles.container}>
-				<StatusBar translucent backgroundColor={'#02A6A4'} />
+				<StatusBar translucent={false} backgroundColor={'#02A6A4'} />
 				<Content>
 					<Form>
 						<Grid style={{marginTop: 5, marginLeft: 15}}>

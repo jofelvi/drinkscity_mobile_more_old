@@ -42,7 +42,7 @@ const moment = require('moment');
 
 var ImagePicker = require('react-native-image-picker');
 var options = {
-  title: 'Cargar imagenes',
+  title: 'Seleccione una opción',
   storageOptions: {
     skipBackup: true,
     path: 'images'
@@ -386,7 +386,7 @@ export default class FormEvent extends React.Component{
 
 		return(
 			<View style={styles.container}>
-				<StatusBar backgroundColor={this.state.statusBarColor} />
+				<StatusBar translucent={false} backgroundColor={this.state.statusBarColor} />
 				<ScrollView>
 					<Content>
 					<Form>
@@ -442,6 +442,15 @@ export default class FormEvent extends React.Component{
 									<Item style={{color: "#ffffff" }} label="Seleccione Una Categoria" value={''} />
 									<Item style={{color: "#ffffff" }} label="Electronica" value={"electronica"} />
 									<Item style={{color: "#ffffff" }} label='Evento Cultural' value={'evento_cultural'} />
+									<Item style={{color: "#ffffff" }} label='Tecno' value={'tecno'} />
+									<Item style={{color: "#ffffff" }} label='Reggaeton' value={'reggaeton'} />
+									<Item style={{color: "#ffffff" }} label='Pub. Bailable' value={'pub_bailable'} />
+									<Item style={{color: "#ffffff" }} label='Tecno' value={'tecno'} />
+									<Item style={{color: "#ffffff" }} label='Concierto' value={'concierto'} />
+									<Item style={{color: "#ffffff" }} label='Hip Hop' value={'hip_hop'} />
+									<Item style={{color: "#ffffff" }} label='Musica de los 90' value={'musica_90'} />
+									<Item style={{color: "#ffffff" }} label='Musica de los 80' value={'musica_80'} />
+
 									<Item style={{color: "#ffffff" }} label='Otros' value={'otros'} /> 
 								</Picker>
 							</Col>

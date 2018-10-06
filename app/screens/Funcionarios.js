@@ -169,7 +169,7 @@ export default class Funcionarios extends React.Component{
 
 		return(
 			<View style={styles.container}>
-				<StatusBar translucent backgroundColor={'#02A6A4'} />
+				<StatusBar translucent={false} backgroundColor={'#02A6A4'} />
 				<ScrollView>
 					<List
 						leftOpenValue={75}

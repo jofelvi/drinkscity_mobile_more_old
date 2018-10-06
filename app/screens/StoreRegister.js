@@ -104,7 +104,30 @@ export default class StoreRegister extends React.Component{
 			email: '',
 			region: '',
 			description: '',
-			days_opened: '',
+			days_opened: {
+				lun: {
+					horario: null
+				},
+				mar: {
+					horario: null
+				},
+				mier: {
+					horario: null
+				},
+				juev: {
+					horario: null
+				},
+				vier: {
+					horario: null
+				},
+				sab: {
+					horario: null
+				},
+				dom: {
+					horario: null
+				}
+
+			},
 			time_opened: '',
 			legal_agent: '',
 			legal_agent_rut: '',
@@ -251,11 +274,19 @@ export default class StoreRegister extends React.Component{
 		this.getGeometryPlace(data);
 	}
 
+	_onDaysInputChange( value, dia ){
+		var { days_opened } = this.state;
+		days_opened[dia].horario = value;
+		this.setState({
+			days_opened
+		});
+	}
+
 	render(){
 		const { width, height } = Dimensions.get('screen')
 		return(
 			<View style={styles.container}>
-				<StatusBar translucent backgroundColor={'#02A6A4'} />
+				<StatusBar translucent={false} backgroundColor={'#02A6A4'} />
 				<Container>
 
 
@@ -281,7 +312,7 @@ export default class StoreRegister extends React.Component{
 
 			        </Modal>
 		      	</ModalView>
-					<Content>
+					<Content style={{backgroundColor: '#111111'}}>
 						<Form>
 							<Grid>
 								<Row>
@@ -349,16 +380,58 @@ export default class StoreRegister extends React.Component{
 									</Col>
 								</Row>
 								<Row>
-									<Col style={{width: "47%"}}>
-									<Item floatingLabel>
-										<Label style={{color: "#ffffff"}}>Dias Laborales</Label>
-										<Input onChangeText={ value => { this.setState({  days_opened : value }) } } style={{color: "#ffffff"}} />
+									<Col style={{width: "95%"}}>
+									<Item stackedLabel>
+										<Label style={{color: "#ffffff"}}>Lunes</Label> 
+										<Input onChangeText={ value => { this._onDaysInputChange( text, 'lun' )  } } style={{color: "#ffffff"}} placeholder={"HH:MM AM/PM - HH:MM AM/PM"} />
 									</Item>
 									</Col>
-									<Col style={{width: "47%"}}>
-									<Item floatingLabel>
-										<Label style={{color: "#ffffff"}}>Horas de Apertura</Label>
-										<Input onChangeText={text => { this.setState({ time_opened: text }) }} style={{color: "#ffffff"}} />
+								</Row>
+								<Row>
+									<Col style={{width: "95%"}}>
+									<Item stackedLabel>
+										<Label style={{color: "#ffffff"}}>Martes</Label> 
+										<Input onChangeText={ value => { this._onDaysInputChange( text, 'mar' )  } } style={{color: "#ffffff"}} placeholder={"HH:MM AM/PM - HH:MM AM/PM"} />
+									</Item>
+									</Col>
+								</Row>
+								<Row>
+									<Col style={{width: "95%"}}>
+									<Item stackedLabel>
+										<Label style={{color: "#ffffff"}}>Miercoles</Label> 
+										<Input onChangeText={ value => { this._onDaysInputChange( text, 'mier' )  } } style={{color: "#ffffff"}} placeholder={"HH:MM AM/PM - HH:MM AM/PM"} />
+									</Item>
+									</Col>
+								</Row>
+								<Row>
+									<Col style={{width: "95%"}}>
+									<Item stackedLabel>
+										<Label style={{color: "#ffffff"}}>Jueves</Label> 
+										<Input onChangeText={ value => { this._onDaysInputChange( text, 'juev' )  } } style={{color: "#ffffff"}} placeholder={"HH:MM AM/PM - HH:MM AM/PM"} />
+									</Item>
+									</Col>
+								</Row>
+								<Row>
+									<Col style={{width: "95%"}}>
+									<Item stackedLabel>
+										<Label style={{color: "#ffffff"}}>Viernes</Label> 
+										<Input onChangeText={ value => { this._onDaysInputChange( text, 'vier' )  } } style={{color: "#ffffff"}} placeholder={"HH:MM AM/PM - HH:MM AM/PM"}  />
+									</Item>
+									</Col>
+								</Row>
+								<Row>
+									<Col style={{width: "95%"}}>
+									<Item stackedLabel>
+										<Label style={{color: "#ffffff"}}>Sabado</Label> 
+										<Input onChangeText={ value => { this._onDaysInputChange( text, 'sab' )  } } style={{color: "#ffffff"}} placeholder={"HH:MM AM/PM - HH:MM AM/PM"}  />
+									</Item>
+									</Col>
+								</Row>
+								<Row>
+									<Col style={{width: "95%"}}>
+									<Item stackedLabel>
+										<Label style={{color: "#ffffff"}}>Domingo</Label> 
+										<Input onChangeText={ value => { this._onDaysInputChange( text, 'dom' )  } } style={{color: "#ffffff"}} placeholder={"HH:MM AM/PM - HH:MM AM/PM"} />
 									</Item>
 									</Col>
 								</Row>
@@ -442,7 +515,7 @@ export default class StoreRegister extends React.Component{
 
 const styles = {
 	container: {
-		backgroundColor: "#111111",
+		backgroundColor: "#000000",
 		flex: 1,
 	},
 	  containerMap: {

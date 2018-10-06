@@ -52,8 +52,8 @@ export default class CrearProducto extends React.Component{
 
 		return(
 			<View style={styles.container}>
-				<StatusBar translucent backgroundColor={'#02A6A4'} />
-				<Container>
+				<StatusBar translucent={false} backgroundColor={'#02A6A4'} />
+				<Container style={{ backgroundColor: '#111111' }}>
 					<Content>
 						<List>
 							<Row>

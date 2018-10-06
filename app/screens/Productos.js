@@ -206,8 +206,8 @@ export default class Productos extends React.Component{
 		return(
 			<MenuProvider>
 			<View style={styles.container}>
-				<StatusBar translucent backgroundColor={'#02A6A4'} />
-				<Content>
+				<StatusBar translucent={false} backgroundColor={'#02A6A4'} />
+				<Content style={styles.container}>
 					{this._renderCards()}
 				</Content>
 			</View>

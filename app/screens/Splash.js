@@ -61,7 +61,7 @@ export default class Splash extends React.Component {
 				<StatusBar translucent backgroundColor={'#111111'} />
 				<View style={styles.ImageCOntent} >
 					<Image
-						source={require('../assets/img/drinkscity_logo.png')}
+						source={require('../assets/img/drinkscity.png')}
 						style={{
 							marginTop: "50%"
 						}}

@@ -187,7 +187,7 @@ export default class onQRScann extends React.Component{
 		const { width, height } = Dimensions.get('screen')
 		return(
 			<View style={styles.container}>
-				<StatusBar translucent backgroundColor={'#02A6A4'} />
+				<StatusBar translucent={false} backgroundColor={'#02A6A4'} />
 				<View>
 					<View>
 						<TouchableOpacity style={{marginTop: 17,xalignSelf: "center", alignContent: "center",alignItems: "center"}}>

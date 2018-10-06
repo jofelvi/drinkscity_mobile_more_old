@@ -105,7 +105,7 @@ export default class PorProducto extends Component{
 		//Alert.alert('debug',JSON.stringify(this.props.navigation.state.params.product))
 		return(
 			<View style={styles.container}>
-				<StatusBar translucent backgroundColor={'#02A6A4'} />
+				<StatusBar translucent={false} backgroundColor={'#02A6A4'} />
 				<Card style={{flex: 0}}>
 					<CardItem cardBody>
 						<Image
