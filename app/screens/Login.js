@@ -152,11 +152,11 @@ export default class Login extends React.Component {
 								<Row>
 									<Col style={{width: "95%"}}>
 										<Item floatingLabel style={{ borderColor: this.state.mailborderColor }}>
-											<Label style={{color: "#ffffff"}}>Correo electronico</Label>
-											<TextInput 
+											<Label style={{color: "#ffffff"}}>Correo electronico 2</Label>
+											<Input 
 												Color={"#FFFFFF"}
 												tintColor={"#FFFFFF"}
-												style={[inputStyles.inputLogin, {borderColor: this.state.passborderColor} ]}
+												style={{borderColor: this.state.passborderColor, color: "#ffffff"}}
 												onFocus={ ev => { this.setState({ mailborderColor: '#01DAC9' }) } }
 												onBlur={ br =>{ this.setState({ mailborderColor: ( (this.state.mailchangeColor) ? '#ffffff' : '#01DAC9' ) }) } }
 												underlineColorAndroid={this.state.mailchangeColor}
@@ -170,10 +170,10 @@ export default class Login extends React.Component {
 									<Col style={{width: "95%"}}>
 										<Item floatingLabel style={{ borderColor: this.state.passborderColor }}>
 											<Label style={{color: "#ffffff"}}>Clave</Label>
-											<TextInput 
+											<Input 
 												Color={"#FFFFFF"}
 												tintColor={"#FFFFFF"}
-												style={ [inputStyles.inputLogin, {borderColor: this.state.passborderColor} ] }
+												style={{borderColor: this.state.passborderColor, color: "#ffffff"}}
 												onFocus={ ev => { this.setState({ passborderColor: '#01DAC9' }) } }
 												onBlur={ br =>{ this.setState({ passborderColor: ( (this.state.passchangeColor) ? '#ffffff' : '#01DAC9' ) }) } }
 												secureTextEntry={true}
@@ -202,7 +202,7 @@ export default class Login extends React.Component {
 									<Col style={{width: "84%"}}>
 										<Button onPress={()=>{ this.props.navigation.navigate('FormFuncionario', {accion:'from_login',funcionario: false, side: 'login', titulo: "Registro de tienda - Usuario"}) }} block  style={{ backgroundColor: "#02A6A4"}}>
 											<Text style={{color: "#ffffff"}}>
-												Registrar
+												Registrarme
 											</Text>
 										</Button>
 									</Col>
